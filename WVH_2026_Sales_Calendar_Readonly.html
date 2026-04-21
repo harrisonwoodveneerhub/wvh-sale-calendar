@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WVH — 2026 Sales Calendar</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:           #F5F5F7;
+  --surface:      #FFFFFF;
+  --dark:         #1D1D1F;
+  --green:        #1A7A3C;
+  --green-mid:    #1F8F46;
+  --green-pale:   #E6F4EC;
+  --gray-1:       #F5F5F7;
+  --gray-2:       #E8E8ED;
+  --gray-3:       #D2D2D7;
+  --gray-4:       #86868B;
+  --gray-5:       #6E6E73;
+  --text:         #1D1D1F;
+  --text-2:       #6E6E73;
+  --text-3:       #86868B;
+  --border:       rgba(0,0,0,0.09);
+  --border-s:     #D2D2D7;
+  --blue:         #0071E3;
+  --spot-color:   #6E2FBE;
+  --flash-color:  #C0392B;
+  --r:            8px;
+  --r-lg:         12px;
+  --r-xl:         20px;
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow:       0 4px 16px rgba(0,0,0,0.07), 0 1px 3px rgba(0,0,0,0.05);
+  --shadow-lg:    0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.05);
+}
+
+*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0 }
+body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+       font-size: 13px; background: var(--bg); color: var(--text);
+       min-height: 100vh; -webkit-font-smoothing: antialiased }
+
+/* ── Loading overlay ── */
+#loading-overlay { position: fixed; inset: 0; background: rgba(255,255,255,0.92);
+                   backdrop-filter: blur(12px); z-index: 9999;
+                   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px }
+#loading-overlay.hidden { display: none }
+.spinner { width: 36px; height: 36px; border: 3px solid var(--gray-2);
+           border-top-color: var(--green); border-radius: 50%; animation: spin .7s linear infinite }
+@keyframes spin { to { transform: rotate(360deg) } }
+.loading-text { font-size: 13px; font-weight: 500; color: var(--text-2) }
+
+/* ── Error banner ── */
+#error-banner { display: none; background: #FEF2F2; border-bottom: 1px solid rgba(192,57,43,0.2);
+                padding: 10px 24px; font-size: 12px; color: var(--flash-color);
+                font-weight: 500; align-items: center; gap: 10px }
+#error-banner.visible { display: flex }
+#error-banner button { background: none; border: 1px solid currentColor; border-radius: 20px;
+                       padding: 2px 10px; cursor: pointer; color: inherit; font-size: 11px; font-family: inherit }
+
+/* ── Topbar ── */
+.topbar { background: rgba(255,255,255,0.82); backdrop-filter: saturate(180%) blur(20px);
+          -webkit-backdrop-filter: saturate(180%) blur(20px);
+          border-bottom: 1px solid rgba(0,0,0,0.1);
+          padding: 0 24px; display: flex; align-items: center; gap: 0;
+          height: 52px; position: sticky; top: 0; z-index: 100 }
+.topbar-left { display: flex; align-items: center; gap: 0; flex: 1 }
+.wvh-logo { font-size: 19px; font-weight: 800; letter-spacing: -.04em; color: var(--dark) }
+.tb-sep { width: 1px; height: 16px; background: rgba(0,0,0,0.12); margin: 0 14px }
+.tb-sub { font-size: 12px; font-weight: 400; color: var(--text-2) }
+.topbar-tabs { display: flex; gap: 3px }
+.tab-btn { background: none; border: none; cursor: pointer; color: var(--text-2);
+           padding: 7px 18px; border-radius: 20px; font-size: 13px; font-weight: 500;
+           letter-spacing: .01em; transition: all .15s }
+.tab-btn.active { background: var(--dark); color: #fff; font-weight: 600 }
+.tab-btn:hover:not(.active) { background: rgba(0,0,0,0.06); color: var(--dark) }
+.topbar-right { display: flex; align-items: center; gap: 10px }
+.last-updated { font-size: 10.5px; color: var(--text-3); white-space: nowrap }
+.refresh-btn { background: none; border: 1px solid var(--border-s); border-radius: 20px;
+               padding: 4px 12px; font-size: 11px; font-weight: 500; color: var(--text-2);
+               cursor: pointer; transition: all .15s; font-family: inherit }
+.refresh-btn:hover { border-color: var(--green); color: var(--green) }
+
+/* ── Hero ── */
+.dashboard-row { display: flex; align-items: center; background: var(--surface);
+                 border-bottom: 1px solid var(--border); padding: 12px 24px; gap: 0; min-height: 90px }
+.dash-sale { display: flex; align-items: center; gap: 14px }
+.hero-donut { position: relative; flex-shrink: 0; width: 106px; height: 106px }
+.hero-donut svg { transform: rotate(-90deg) }
+.hero-donut-divider { width: 1px; height: 60px; background: var(--border); flex-shrink: 0; margin: 0 10px }
+.hero-donut-center { position: absolute; inset: 0; display: flex; flex-direction: column;
+                     align-items: center; justify-content: center; text-align: center }
+.hero-days-num { font-size: 28px; font-weight: 700; letter-spacing: -.04em; color: var(--dark); line-height: 1 }
+.hero-days-lbl { font-size: 8.5px; font-weight: 500; letter-spacing: .06em; text-transform: uppercase;
+                 color: var(--text-3); margin-top: 2px }
+.hero-info { min-width: 180px; max-width: 260px }
+.hero-badge { display: flex; align-items: center; gap: 7px; margin-bottom: 4px }
+.hero-type-tag { font-size: 9.5px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase;
+                 padding: 2px 8px; border-radius: 20px; background: var(--gray-2); color: var(--text-2) }
+.hero-live { display: flex; align-items: center; gap: 5px }
+.hero-status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green);
+                   box-shadow: 0 0 0 2px var(--green-pale) }
+.hero-status-lbl { font-size: 10.5px; font-weight: 600; color: var(--green) }
+.hero-name { font-size: 19px; font-weight: 700; letter-spacing: -.025em; color: var(--dark);
+             margin-bottom: 3px; line-height: 1.15; white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+.hero-dates { font-size: 11px; color: var(--text-2); margin-bottom: 8px; font-weight: 400; white-space: nowrap }
+.hero-dates b { color: var(--dark); font-weight: 600 }
+.hero-progress-wrap { display: flex; align-items: center; gap: 8px }
+.hero-progress-bar { flex: 1; max-width: 160px; height: 3px; background: var(--gray-2);
+                     border-radius: 4px; overflow: hidden }
+.hero-progress-fill { height: 100%; background: var(--green); border-radius: 4px }
+.hero-progress-lbl { font-size: 10px; color: var(--text-3); white-space: nowrap }
+.hero-offer-text { font-size: 11px; color: #7A5500; margin-top: 5px; font-weight: 500 }
+.hero-offer-text strong { margin-right: 4px }
+
+/* ── Views ── */
+.view { display: none; padding: 12px 18px 28px }
+.view.active { display: block }
+.section-title { font-size: 11px; font-weight: 600; letter-spacing: .07em; text-transform: uppercase;
+                 color: var(--text-3); margin-bottom: 10px }
+
+/* ── Read-only text display ── */
+.ro-text { display: block; font-size: 12px; color: var(--text); padding: 3px 5px; line-height: 1.4 }
+.ro-date { display: block; font-size: 12.5px; font-weight: 700; color: var(--dark);
+           letter-spacing: -.01em; padding: 3px 5px; white-space: nowrap }
+.ro-offer { display: block; font-size: 11.5px; color: #7A5500; padding: 3px 5px;
+            font-weight: 500; max-width: 220px; line-height: 1.35 }
+.ro-ext { display: flex; align-items: center; gap: 6px; padding: 3px 5px;
+          font-size: 11px; color: var(--blue); font-weight: 600; white-space: nowrap }
+.ro-spotlight { display: flex; flex-direction: column; gap: 3px; padding: 3px 5px }
+.ro-spot-text { font-size: 11px; color: var(--spot-color); font-weight: 500 }
+.ro-spot-dates { font-size: 10.5px; color: var(--text-3) }
+.ro-flash-text { font-size: 11px; color: var(--flash-color); font-weight: 500; padding: 3px 5px }
+.ro-flash-dates { font-size: 10.5px; color: var(--text-3); padding: 0 5px 3px }
+
+/* ── Table ── */
+.table-wrap { overflow-x: auto; overflow-y: auto; max-height: calc(100vh - 200px);
+              border-radius: var(--r-lg); border: 1px solid var(--border);
+              background: var(--surface); box-shadow: var(--shadow-sm) }
+.calendar-table { width: 100%; border-collapse: collapse; background: var(--surface) }
+.calendar-table th { background: var(--dark); color: rgba(255,255,255,.7);
+                     padding: 7px 10px; font-size: 9.5px; font-weight: 500; text-align: left;
+                     white-space: nowrap; letter-spacing: .06em; text-transform: uppercase;
+                     position: sticky; top: 0; z-index: 20 }
+.calendar-table th.th-spot  { background: #2D1A50 }
+.calendar-table th.th-flash { background: #4A1212 }
+.calendar-table td { padding: 5px 8px; border-bottom: 1px solid var(--border); vertical-align: middle }
+.calendar-table tr.sale-row:hover td { background: var(--gray-1) }
+.calendar-table tr.row-active td { background: var(--green-pale) !important }
+.calendar-table tr.row-active td:first-child { border-left: 3px solid var(--green) }
+
+.st-pill   { display: inline-block; font-size: 9.5px; padding: 2px 7px; border-radius: 20px;
+             white-space: nowrap; font-weight: 500 }
+.st-done     { background: var(--gray-2); color: var(--text-3) }
+.st-active   { background: var(--green-pale); color: var(--green); font-weight: 600 }
+.st-upcoming { background: #FEF3E2; color: #92400E }
+.days-cell   { text-align: center; font-size: 11.5px; color: var(--text-2);
+               font-variant-numeric: tabular-nums; font-weight: 500 }
+
+.name-major  { font-size: 13px; font-weight: 600; color: var(--dark) }
+.name-bridge { font-size: 13px; font-weight: 400; font-style: italic; color: var(--text-2) }
+.tentpole-pill { display: inline-block; font-size: 8.5px; font-weight: 700; letter-spacing: .08em;
+                 text-transform: uppercase; background: var(--dark); color: #fff;
+                 border-radius: 20px; padding: 2px 10px; line-height: 1.6 }
+
+/* Email expand rows */
+.toggle-btn { background: transparent; border: 1px solid var(--border-s); color: var(--text-3);
+              font-size: 9.5px; font-weight: 500; border-radius: 20px; padding: 2px 7px;
+              white-space: nowrap; cursor: pointer; transition: all .15s;
+              display: flex; align-items: center; gap: 3px }
+.toggle-btn:hover  { border-color: var(--green); color: var(--green) }
+.toggle-btn.open   { background: var(--green); color: #fff; border-color: var(--green) }
+.email-expand-row { display: none }
+.email-expand-row.visible { display: table-row }
+.email-expand-cell { padding: 0 !important; border-bottom: 2px solid var(--green) !important;
+                     background: var(--gray-1) }
+.email-day-table { width: 100%; border-collapse: collapse }
+.email-day-table thead th { background: #1D1D1F; color: rgba(255,255,255,.6); padding: 8px 14px;
+                             font-size: 9.5px; font-weight: 500; text-transform: uppercase;
+                             letter-spacing: .06em; position: static }
+.email-day-table thead th:first-child { width: 210px }
+.email-day-row { border-bottom: 1px solid var(--border) }
+.email-day-row:last-child { border-bottom: none }
+.email-day-row td { padding: 8px 14px; vertical-align: middle; background: #fff }
+.email-day-row.ext-day td { background: #F0F5FF }
+.date-cell  { white-space: nowrap; min-width: 190px }
+.date-text  { font-weight: 600; font-size: 12px; color: var(--dark) }
+.ext-day .date-text { color: var(--blue) }
+.dow-badge  { display: inline-block; font-size: 8.5px; font-weight: 600; border-radius: 4px;
+              padding: 1px 5px; letter-spacing: .04em; vertical-align: middle; margin-left: 5px }
+.dow-main { background: var(--dark); color: #fff }
+.dow-ext  { background: var(--blue); color: #fff }
+.type-tag-ext { font-size: 8.5px; padding: 1px 6px; border-radius: 20px; font-weight: 500;
+                margin-left: 5px; background: #DBEAFE; color: #1D4ED8 }
+.ro-email-val { font-size: 12px; color: var(--text) }
+.ro-email-val.empty { color: var(--text-3); font-style: italic }
+
+/* Items to Promote */
+.itp-wrap { margin-top: 6px; border-top: 1px solid rgba(0,0,0,0.1); padding-top: 5px }
+.itp-lbl { font-size: 8.5px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
+           color: var(--text-3); margin-bottom: 3px }
+.itp-text { font-size: 10.5px; color: var(--text); line-height: 1.5; white-space: pre-wrap }
+.itp-new-item { font-size: 10.5px; color: var(--dark); font-weight: 600; padding: 2px 0;
+                border-bottom: 1px solid var(--border); line-height: 1.4 }
+.itp-new-item:last-child { border-bottom: none }
+.itp-launch-date { font-size: 9px; font-weight: 400; color: var(--text-3); margin-left: 4px }
+
+/* ── Gantt ── */
+.gantt-wrap { overflow-x: auto; overflow-y: auto; max-height: calc(100vh - 175px);
+              border-radius: var(--r-lg); border: 1px solid var(--border);
+              background: var(--surface); box-shadow: var(--shadow-sm) }
+.gantt-outer { background: var(--surface); position: relative }
+.gantt-header-row { display: flex; position: sticky; top: 0; z-index: 30; background: var(--dark);
+                    border-radius: var(--r-lg) var(--r-lg) 0 0; overflow: hidden }
+.gantt-row-wrap { display: flex; border-bottom: 1px solid var(--border); min-height: 66px }
+.gantt-row-wrap:last-child { border-bottom: none }
+.gantt-row-wrap:nth-child(even) { background: var(--gray-1) }
+.gantt-row-wrap:hover { background: var(--gray-2) }
+.gantt-row-wrap.row-active { background: var(--green-pale) !important }
+.glc { flex: 0 0 220px; min-width: 220px; position: sticky; left: 0; z-index: 10;
+       background: inherit; padding: 8px 14px; display: flex; align-items: center;
+       gap: 6px; flex-wrap: wrap; border-right: 1px solid var(--border) }
+.gantt-header-row .glc { background: var(--dark); color: #fff; font-weight: 600; font-size: 11px;
+                          justify-content: center; min-height: 58px; border-right-color: rgba(255,255,255,.08) }
+.gtc { flex: 1; position: relative; overflow: visible }
+.gantt-header-row .gtc { min-height: 58px }
+.bar-major,.bar-bridge { position: absolute; top: 5px; height: 24px; border-radius: 5px 0 0 5px;
+                          display: flex; align-items: center; padding: 0 8px; white-space: nowrap;
+                          overflow: hidden; font-size: 10px; font-weight: 600; cursor: default }
+.bar-major  { background: var(--dark); color: #fff }
+.bar-bridge { background: var(--gray-3); color: var(--gray-5) }
+.bar-ext-major,.bar-ext-bridge { position: absolute; top: 5px; height: 24px; border-radius: 0 5px 5px 0;
+                                   display: flex; align-items: center; justify-content: center;
+                                   font-size: 9px; font-weight: 600; cursor: default }
+.bar-ext-major  { background: var(--green); color: #fff; border-left: 2px dashed rgba(255,255,255,.3) }
+.bar-ext-bridge { background: #B8D4B0; color: #1A4A1A; border-left: 2px dashed rgba(26,74,26,.25) }
+.bar-done { opacity: .28 }
+.bar-active-glow { box-shadow: 0 0 0 2px var(--green) }
+.bar-spotlight { position: absolute; height: 9px; border-radius: 4px; background: var(--spot-color);
+                 cursor: default; display: flex; align-items: center; padding: 0 5px;
+                 overflow: hidden; font-size: 7.5px; font-weight: 700; color: #fff; white-space: nowrap }
+.bar-flash { position: absolute; height: 9px; border-radius: 4px; background: var(--flash-color);
+             cursor: default; display: flex; align-items: center; padding: 0 5px;
+             overflow: hidden; font-size: 7.5px; font-weight: 700; color: #fff; white-space: nowrap }
+.gantt-month-lbl { position: absolute; top: 0; height: 28px; font-size: 10px; font-weight: 500;
+                   color: rgba(255,255,255,.55); border-right: 1px solid rgba(255,255,255,.07);
+                   display: flex; align-items: center; justify-content: center; overflow: hidden; letter-spacing: .03em }
+.gantt-week-tick { position: absolute; top: 28px; width: 1px; height: 8px; background: rgba(255,255,255,.18) }
+.gantt-week-lbl  { position: absolute; top: 38px; font-size: 8px; color: rgba(255,255,255,.38);
+                   transform: translateX(-50%); white-space: nowrap }
+.today-line { position: absolute; top: 0; width: 2px; height: 100%;
+              background: #FF3B30; opacity: .65; pointer-events: none; z-index: 6 }
+.today-line::after { content: 'TODAY'; position: absolute; top: 2px; left: 3px; font-size: 7px;
+                     font-weight: 700; color: #FF3B30; white-space: nowrap; letter-spacing: .05em }
+.month-stripe { position: absolute; top: 0; height: 100%; background: rgba(0,0,0,0.018); pointer-events: none }
+.gsale-name { font-size: 11.5px; flex: 1; line-height: 1.2; color: var(--dark); font-weight: 600 }
+.row-bridge .gsale-name { font-weight: 400; font-style: italic; color: var(--text-2) }
+
+/* ── Legend ── */
+.legend { display: flex; gap: 0; flex-wrap: wrap; font-size: 11.5px; color: var(--text-2);
+          margin-top: 14px; background: var(--surface); border-radius: var(--r-lg);
+          border: 1px solid var(--border); box-shadow: var(--shadow-sm); overflow: hidden }
+.leg-section { display: flex; align-items: center; gap: 8px; padding: 12px 18px;
+               border-right: 1px solid var(--border) }
+.leg-section:last-child { border-right: none }
+.leg-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0 }
+.leg-ext { display: flex; flex-shrink: 0 }
+.leg-ext-a { width: 22px; height: 10px; border-radius: 3px 0 0 3px }
+.leg-ext-b { width: 10px; height: 10px; border-radius: 0 3px 3px 0 }
+.leg-label { font-size: 11px; font-weight: 400; color: var(--text-2) }
+
+/* ── Photoshoot Gantt ── */
+.ps-bar-concept { position: absolute; height: 22px; border-radius: 5px;
+                  background: var(--spot-color); color: #fff; font-size: 9.5px; font-weight: 600;
+                  display: flex; align-items: center; padding: 0 8px; white-space: nowrap;
+                  overflow: hidden; top: 5px; opacity: .88; cursor: default }
+.ps-shoot-marker { position: absolute; width: 20px; border-radius: 4px; top: 3px; height: 38px;
+                   background: var(--dark); display: flex; align-items: center; justify-content: center;
+                   font-size: 13px; z-index: 6; box-shadow: 0 2px 8px rgba(0,0,0,0.25); cursor: default }
+.ps-bar-delivery { position: absolute; height: 22px; border-radius: 5px;
+                   background: var(--green); color: #fff; font-size: 9.5px; font-weight: 600;
+                   display: flex; align-items: center; padding: 0 8px; white-space: nowrap;
+                   overflow: hidden; top: 31px; opacity: .88; cursor: default }
+.ps-empty-row { font-size: 10.5px; color: var(--text-3); font-style: italic; position: absolute;
+                top: 18px; left: 8px }
+.ps-month-badge { font-size: 9px; font-weight: 600; padding: 2px 7px; border-radius: 20px;
+                  background: var(--spot-color); color: #fff; white-space: nowrap }
+
+/* ── Content Calendar (read-only) ── */
+.content-wrap { overflow: auto; max-height: calc(100vh - 175px);
+                border-radius: var(--r-lg); border: 1px solid var(--border);
+                background: var(--surface); box-shadow: var(--shadow-sm) }
+.content-table { border-collapse: collapse; table-layout: fixed }
+.content-table thead tr:first-child th { position: sticky; top: 0; z-index: 22 }
+.content-table thead tr:nth-child(2) th { position: sticky; top: 32px; z-index: 21 }
+.ct-corner { position: sticky !important; left: 0; z-index: 30 !important;
+             background: var(--dark) !important; text-align: left !important; width: 168px; min-width: 168px }
+.ct-q-hdr { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+            color: rgba(255,255,255,.9); text-align: center; padding: 8px 12px; height: 32px }
+.ct-q1 { background: #1A3D52 } .ct-q2 { background: #1A4030 }
+.ct-q3 { background: #4A3010 } .ct-q4 { background: #38184A }
+.ct-m-hdr { font-size: 10.5px; font-weight: 600; text-align: center; padding: 7px 6px;
+            color: rgba(255,255,255,.85); width: 148px; min-width: 148px; height: 32px; letter-spacing: .01em }
+.ct-m-hdr.cur-month { color: #fff; font-weight: 800 }
+.ct-m-hdr.major-sale-col { outline: 2px solid rgba(180,120,0,0.55); outline-offset: -2px }
+.ct-row-label { position: sticky; left: 0; z-index: 10; background: var(--gray-1);
+                border-right: 2px solid var(--border); border-bottom: 1px solid var(--border);
+                padding: 10px 12px; font-size: 10px; font-weight: 700; color: var(--dark);
+                letter-spacing: .03em; text-transform: uppercase; vertical-align: top;
+                white-space: nowrap; width: 168px; min-width: 168px }
+.ct-row-sub { font-size: 9px; font-weight: 400; color: var(--text-3); text-transform: none;
+              letter-spacing: 0; margin-top: 2px }
+.ct-cell { border-bottom: 1px solid var(--border); border-right: 1px solid var(--border);
+           padding: 6px 8px; vertical-align: top; font-size: 11px; line-height: 1.55;
+           color: var(--text); white-space: pre-wrap }
+.ct-cell.ct-q1 { background: #F5F9FC } .ct-cell.ct-q1.cur-month { background: #EAF4FB }
+.ct-cell.ct-q2 { background: #F5FBF7 } .ct-cell.ct-q2.cur-month { background: #E8F7ED }
+.ct-cell.ct-q3 { background: #FDFAF4 } .ct-cell.ct-q3.cur-month { background: #FBF4E2 }
+.ct-cell.ct-q4 { background: #FAF6FC } .ct-cell.ct-q4.cur-month { background: #F3EAF9 }
+.ct-cell.major-sale-col { background: #FFF8ED !important }
+.ct-cell.major-sale-col.cur-month { background: #FFF0D0 !important }
+.ct-cell.quarterly { white-space: normal }
+.ct-major-badge { display: inline-block; font-size: 8px; font-weight: 700; letter-spacing: .05em;
+                  text-transform: uppercase; background: rgba(180,120,0,0.85); color: #fff;
+                  border-radius: 10px; padding: 1px 6px; margin-top: 3px; line-height: 1.5 }
+.cur-month-indicator { display: block; width: 5px; height: 5px; border-radius: 50%;
+                       background: var(--green); margin: 0 auto 2px }
+.ct-shoot-date { font-size: 11px; font-weight: 700; color: var(--dark); margin-bottom: 4px }
+.ct-pm-row { display: flex; align-items: baseline; gap: 6px; margin-top: 3px }
+.ct-pm-lbl { font-size: 8.5px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
+             white-space: nowrap; flex-shrink: 0 }
+.ct-pm-lbl.concept  { color: var(--spot-color) }
+.ct-pm-lbl.delivery { color: var(--green) }
+.ct-pm-val { font-size: 10.5px; font-weight: 600; color: var(--dark) }
+.npm-ro-item { background: rgba(0,0,0,0.04); border-radius: 5px; padding: 4px 7px;
+               margin-bottom: 4px; font-size: 11px; font-weight: 600; color: var(--dark) }
+.npm-ro-date { font-size: 9.5px; color: var(--text-3); font-weight: 400; margin-top: 1px }
+
+/* ── Toast ── */
+#toast { position: fixed; bottom: 24px; right: 24px; background: rgba(29,29,31,0.88);
+         backdrop-filter: blur(16px); color: #fff; padding: 10px 20px; border-radius: 20px;
+         font-size: 12.5px; font-weight: 500; opacity: 0; pointer-events: none; transition: opacity .25s;
+         z-index: 999; box-shadow: 0 4px 20px rgba(0,0,0,0.2) }
+#toast.show { opacity: 1 }
+</style>
+</head>
+<body>
+
+<!-- Loading overlay -->
+<div id="loading-overlay">
+  <div class="spinner"></div>
+  <div class="loading-text">Loading from Google Sheets…</div>
+</div>
+
+<!-- Error banner -->
+<div id="error-banner">
+  <span id="error-msg">Could not load data.</span>
+  <button onclick="loadAllData()">Retry</button>
+</div>
+
+<!-- Topbar -->
+<div class="topbar">
+  <div class="topbar-left">
+    <span class="wvh-logo">WVH</span>
+    <div class="tb-sep"></div>
+    <span class="tb-sub">The Wood Veneer Hub</span>
+    <div class="tb-sep"></div>
+    <div class="topbar-tabs">
+      <button class="tab-btn active" onclick="switchTab('table',this)">2026 Sales Calendar</button>
+      <button class="tab-btn" onclick="switchTab('gantt',this)">Sales Gantt</button>
+      <button class="tab-btn" onclick="switchTab('content',this)">Content Planner</button>
+      <button class="tab-btn" onclick="switchTab('photoshoot',this)">Photoshoot Timeline</button>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <span class="last-updated" id="last-updated"></span>
+    <button class="refresh-btn" onclick="loadAllData()">↻ Refresh</button>
+  </div>
+</div>
+
+<!-- Hero -->
+<div class="dashboard-row" id="sale-hero"></div>
+
+<!-- Views -->
+<div id="view-table" class="view active">
+  <div class="table-wrap">
+    <table class="calendar-table">
+      <thead>
+        <tr>
+          <th style="width:20px"></th>
+          <th style="min-width:180px">Sale Name</th>
+          <th style="width:58px">Emails</th>
+          <th style="min-width:110px">Opens (Wed)</th>
+          <th style="min-width:110px">Closes (Sun)</th>
+          <th style="min-width:220px">Sale Offer</th>
+          <th style="min-width:148px">Extension</th>
+          <th class="th-spot"  style="min-width:180px">Spotlight Offer</th>
+          <th class="th-flash" style="min-width:180px">Flash Sale</th>
+          <th style="width:38px">Days</th>
+          <th style="width:38px">Total</th>
+          <th style="width:78px">Status</th>
+        </tr>
+      </thead>
+      <tbody id="table-body"></tbody>
+    </table>
+  </div>
+</div>
+
+<div id="view-gantt" class="view">
+  <div class="section-title">Sales Gantt Chart</div>
+  <div class="gantt-wrap" id="gantt-wrap">
+    <div class="gantt-outer" id="gantt-outer">
+      <div class="gantt-header-row">
+        <div class="glc">Sale</div>
+        <div class="gtc" id="gantt-ruler"></div>
+      </div>
+      <div id="gantt-rows"></div>
+    </div>
+  </div>
+  <div class="legend" style="margin-top:14px">
+    <div class="leg-section"><div class="leg-dot" style="background:var(--dark)"></div><span class="leg-label">Major Sale</span></div>
+    <div class="leg-section"><div class="leg-dot" style="background:var(--gray-3)"></div><span class="leg-label">Bridge Sale</span></div>
+    <div class="leg-section"><div class="leg-ext"><div class="leg-ext-a" style="background:var(--dark)"></div><div class="leg-ext-b" style="background:var(--green)"></div></div><span class="leg-label">+ Extension</span></div>
+    <div class="leg-section"><div class="leg-dot" style="background:var(--spot-color)"></div><span class="leg-label">Spotlight Offer</span></div>
+    <div class="leg-section"><div class="leg-dot" style="background:var(--flash-color)"></div><span class="leg-label">Flash Sale</span></div>
+  </div>
+</div>
+
+<div id="view-content" class="view">
+  <div class="section-title">FY26 Content Planner</div>
+  <div class="content-wrap" id="content-wrap"></div>
+</div>
+
+<div id="view-photoshoot" class="view">
+  <div class="section-title">Photoshoot Timeline</div>
+  <div class="gantt-wrap" id="ps-gantt-wrap">
+    <div class="gantt-outer" id="ps-gantt-outer">
+      <div class="gantt-header-row">
+        <div class="glc">Month</div>
+        <div class="gtc" id="ps-gantt-ruler"></div>
+      </div>
+      <div id="ps-gantt-rows"></div>
+    </div>
+  </div>
+  <div class="legend" style="margin-top:14px">
+    <div class="leg-section"><div class="leg-dot" style="background:var(--spot-color)"></div><span class="leg-label">Concept Prep</span></div>
+    <div class="leg-section"><div class="leg-dot" style="background:var(--dark)"></div><span class="leg-label">Shoot Day</span></div>
+    <div class="leg-section"><div class="leg-dot" style="background:var(--green)"></div><span class="leg-label">Editing / Delivery</span></div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ── CONFIG — fill these in after setting up Google Sheets API ──
+const SHEET_ID = '1KfPp06mm2JMYadIyHtnY1tgp26BYUhGjy-PM437sDfA';
+const API_KEY  = 'AIzaSyBZz-YgIsQ30wGK-ETnznVaehs7fsMc7RY';
+const REFRESH_INTERVAL_MS = 5 * 60 * 1000; // auto-refresh every 5 min
+
+// ── State ──
+let SALES = [];
+let CCAL  = {};
+const EXPANDED = new Set();
+const MONTHS_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const DAYS_SHORT   = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const QUARTERS_DEF = [
+  {label:'Q1 — Jan · Feb · Mar', cls:'ct-q1'},
+  {label:'Q2 — Apr · May · Jun', cls:'ct-q2'},
+  {label:'Q3 — Jul · Aug · Sep', cls:'ct-q3'},
+  {label:'Q4 — Oct · Nov · Dec', cls:'ct-q4'},
+];
+const MAJOR_CONTENT_MAP = {
+  "Presidents' Day Sale": "02",
+  "Memorial Day Sale":    "05",
+  "Labor Day Sale":       "09",
+  "Black Friday Sale":    "11"
+};
+const MAJOR_SALE_MONTHS = { "02":"Presidents' Day", "05":"Memorial Day", "09":"Labor Day", "11":"Black Friday" };
+const CONTENT_ROW_DEFS = [
+  { key:'seasonalFeel',  label:'Seasonal Feel',           sub:'' },
+  { key:'photoshoot',    label:'Photoshoot',               sub:'Quarterly shoot dates', quarterly:true },
+  { key:'holidays',      label:'Holidays & Sales',         sub:'Notable dates to support' },
+  { key:'themes',        label:'Themes / Narratives',      sub:'Campaign messaging' },
+  { key:'categoryFocus', label:'Category / Color Focus',   sub:'Visual & product direction' },
+  { key:'coreProducts',  label:'Core Products',            sub:'5 featured SKUs' },
+  { key:'newProducts',   label:'New to Market',            sub:'New product launches', multiItem:true },
+  { key:'reelIdeas',     label:'Instagram Reels',          sub:'2–4 reel concepts' },
+];
+
+// ── Helpers ──
+function escHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;') }
+function addDays(d,n){ const r=new Date(d); r.setDate(r.getDate()+n); return r }
+function fmtDate(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0') }
+function fmtMed(s){ if(!s) return ''; const d=new Date(s+'T00:00:00'); return MONTHS_SHORT[d.getMonth()]+' '+d.getDate() }
+function fmtShort(s){ if(!s) return ''; const d=new Date(s+'T00:00:00'); return MONTHS_SHORT[d.getMonth()].substring(0,3)+' '+d.getDate() }
+function fmtFull(s){ if(!s) return ''; const d=new Date(s+'T00:00:00'); return MONTHS_SHORT[d.getMonth()]+' '+d.getDate()+', '+d.getFullYear() }
+function daysBetween(a,b){ return Math.round((b-a)/(1000*60*60*24)) }
+function mainDays(s){ if(!s.open||!s.close) return 0; return daysBetween(new Date(s.open+'T00:00:00'),new Date(s.close+'T00:00:00'))+1 }
+function totalDays(s){ const md=mainDays(s); if(!s.extEnd) return md; return md+daysBetween(new Date(s.close+'T00:00:00'),new Date(s.extEnd+'T00:00:00')) }
+function ctFmtDate(s){ if(!s) return ''; const d=new Date(s+'T00:00:00'); return MONTHS_SHORT[d.getMonth()]+' '+d.getDate()+', '+d.getFullYear() }
+function ctSubMonth(s){ if(!s) return ''; const d=new Date(s+'T00:00:00'); d.setMonth(d.getMonth()-1); return fmtDate(d) }
+function ctAddDays14(s){ if(!s) return ''; return fmtDate(addDays(new Date(s+'T00:00:00'),14)) }
+function getSaleExt(sale){
+  if(!sale.close) return {extMon:null,extTue:null};
+  const extMon=sale.extStart||fmtDate(addDays(new Date(sale.close+'T00:00:00'),1));
+  const extTue=sale.extEnd  ||fmtDate(addDays(new Date(sale.close+'T00:00:00'),2));
+  return {extMon,extTue};
+}
+function getStatus(sale){
+  const today=new Date(); today.setHours(0,0,0,0);
+  if(!sale.open||!sale.close) return {label:'—',cls:'',pill:'st-upcoming'};
+  const o=new Date(sale.open+'T00:00:00'), c=new Date(sale.close+'T00:00:00');
+  const end=sale.extEnd?new Date(sale.extEnd+'T00:00:00'):c;
+  if(today>end) return {label:'Done',cls:'done',pill:'st-done'};
+  if(today>=o)  return {label:'Active',cls:'active',pill:'st-active'};
+  return {label:'Upcoming',cls:'',pill:'st-upcoming'};
+}
+function getSaleDates(sale){
+  const dates=[];
+  if(!sale.open||!sale.close) return dates;
+  const {extMon,extTue}=getSaleExt(sale);
+  let cur=new Date(sale.open+'T00:00:00');
+  const closeD=new Date(sale.close+'T00:00:00');
+  while(cur<=closeD){ dates.push({dateStr:fmtDate(cur),isExt:false}); cur=addDays(cur,1); }
+  if(extMon){ dates.push({dateStr:extMon,isExt:true}); }
+  if(extTue){ dates.push({dateStr:extTue,isExt:true}); }
+  return dates;
+}
+function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2200) }
+
+// ── Google Sheets fetch ──
+async function fetchRange(tab, range){
+  if(SHEET_ID==='YOUR_SHEET_ID_HERE') throw new Error('Sheet ID not configured. Open the HTML file and set SHEET_ID and API_KEY.');
+  const url='https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+'/values/'+encodeURIComponent(tab+'!'+range)+'?key='+API_KEY;
+  const res=await fetch(url);
+  if(!res.ok){ const e=await res.json().catch(()=>{}); throw new Error((e&&e.error&&e.error.message)||'HTTP '+res.status); }
+  const data=await res.json();
+  return data.values||[];
+}
+
+function parseSales(rows){
+  SALES=rows.filter(r=>r&&r[0]).map((r,i)=>({
+    id:i, name:r[0]||'', type:(r[1]||'bridge').toLowerCase(),
+    open:r[2]||'', close:r[3]||'', offer:r[4]||'',
+    extStart:r[5]||'', extEnd:r[6]||'',
+    spotlightOffer:r[7]||'', spotlightStart:r[8]||'', spotlightEnd:r[9]||'',
+    flashSale:r[10]||'', flashStart:r[11]||'', flashEnd:r[12]||'',
+    emailDays:{}
+  }));
+}
+function parseEmailSchedule(rows){
+  const map={};
+  rows.filter(r=>r&&r[0]&&r[1]).forEach(r=>{
+    const name=r[0], date=r[1];
+    if(!map[name]) map[name]={};
+    map[name][date]={subject:r[2]||'',pretext:r[3]||'',products:r[4]||''};
+  });
+  SALES.forEach(s=>{ s.emailDays=map[s.name]||{}; });
+}
+function parseContentCalendar(rows, newProdRows){
+  CCAL={};
+  rows.filter(r=>r&&r[0]).forEach(r=>{
+    const mk=String(r[0]).padStart(2,'0');
+    CCAL[mk]={
+      seasonalFeel:r[1]||'', photoshoot:r[2]||'', photoshootDate:r[3]||'',
+      holidays:r[4]||'', themes:r[5]||'', categoryFocus:r[6]||'',
+      coreProducts:r[7]||'', reelIdeas:r[8]||'', newProductsList:[]
+    };
+  });
+  // Fill any missing months
+  for(let m=1;m<=12;m++){
+    const mk=String(m).padStart(2,'0');
+    if(!CCAL[mk]) CCAL[mk]={seasonalFeel:'',photoshoot:'',photoshootDate:'',holidays:'',themes:'',categoryFocus:'',coreProducts:'',reelIdeas:'',newProductsList:[]};
+  }
+  // New to market items
+  newProdRows.filter(r=>r&&r[0]).forEach(r=>{
+    const mk=String(r[0]).padStart(2,'0');
+    if(CCAL[mk]) CCAL[mk].newProductsList.push({name:r[1]||'',launchDate:r[2]||''});
+  });
+}
+
+async function loadAllData(){
+  showLoading(true);
+  showError(null);
+  try{
+    const [salesRows,emailRows,contentRows,newProdRows]=await Promise.all([
+      fetchRange('Sales','A2:M200'),
+      fetchRange('Email_Schedule','A2:E2000'),
+      fetchRange('Content_Calendar','A2:I13'),
+      fetchRange('New_To_Market','A2:C500'),
+    ]);
+    parseSales(salesRows);
+    parseEmailSchedule(emailRows);
+    parseContentCalendar(contentRows,newProdRows);
+    renderAll();
+    updateLastRefreshed();
+    toast('Data refreshed from Google Sheets');
+  }catch(e){
+    showError(e.message);
+  }finally{
+    showLoading(false);
+  }
+}
+
+function renderAll(){
+  renderHero();
+  renderTable();
+  // Gantt + content render on tab switch
+  const activeTab=document.querySelector('.tab-btn.active');
+  if(activeTab){
+    const tab=activeTab.getAttribute('onclick').match(/'(\w+)'/)[1];
+    if(tab==='gantt') renderGantt();
+    if(tab==='content') renderContent();
+    if(tab==='photoshoot') renderPhotoshootGantt();
+  }
+}
+
+function showLoading(on){ document.getElementById('loading-overlay').classList.toggle('hidden',!on) }
+function showError(msg){
+  const b=document.getElementById('error-banner');
+  if(msg){ document.getElementById('error-msg').textContent=msg; b.classList.add('visible'); }
+  else { b.classList.remove('visible'); }
+}
+function updateLastRefreshed(){
+  const now=new Date();
+  document.getElementById('last-updated').textContent='Updated '+now.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+}
+
+// ── Tab switching ──
+function switchTab(tab,btn){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('view-'+tab).classList.add('active'); btn.classList.add('active');
+  if(tab==='gantt')      renderGantt();
+  if(tab==='content')    renderContent();
+  if(tab==='photoshoot') renderPhotoshootGantt();
+}
+
+// ── Hero ──
+function renderHero(){
+  const hero=document.getElementById('sale-hero');
+  const today=new Date(); today.setHours(0,0,0,0);
+  let sale=SALES.find(s=>{
+    if(!s.open||!s.close) return false;
+    const o=new Date(s.open+'T00:00:00'), end=s.extEnd?new Date(s.extEnd+'T00:00:00'):new Date(s.close+'T00:00:00');
+    return today>=o&&today<=end;
+  });
+  if(!sale) sale=SALES.find(s=>s.open&&new Date(s.open+'T00:00:00')>today);
+  if(!sale){ hero.innerHTML='<div style="padding:14px 0;color:var(--text-3);font-size:12px">No sale data loaded.</div>'; return; }
+  const st=getStatus(sale);
+  const isMajor=sale.type==='major';
+  const closeD=new Date(sale.close+'T00:00:00');
+  const openD=new Date(sale.open+'T00:00:00');
+  const endD=sale.extEnd?new Date(sale.extEnd+'T00:00:00'):closeD;
+  const daysLeft=st.cls==='active'?Math.max(0,daysBetween(today,endD)):daysBetween(today,openD);
+  const totalD=daysBetween(openD,endD)+1;
+  const elapsed=st.cls==='active'?daysBetween(openD,today):0;
+  const pct=totalD>0?Math.min(100,Math.round(elapsed/totalD*100)):0;
+  const R=44,SW=9,SZ=(R+SW)*2,C=SZ/2,CIRC=2*Math.PI*R;
+  const daysOffset=CIRC-(daysLeft/Math.max(daysLeft,30))*CIRC;
+  const liveHtml=st.cls==='active'?'<div class="hero-live"><div class="hero-status-dot"></div><span class="hero-status-lbl">Live Now</span></div>':'';
+  const offerHtml=sale.offer?'<div class="hero-offer-text"><strong>Offer</strong>'+escHtml(sale.offer)+'</div>':'';
+  hero.innerHTML='<div class="dash-sale">'
+    +'<div class="hero-info">'
+    +'<div class="hero-badge"><span class="hero-type-tag">'+(isMajor?'Tentpole Sale':'Bridge Sale')+'</span>'+liveHtml+'</div>'
+    +'<div class="hero-name">'+escHtml(sale.name)+'</div>'
+    +'<div class="hero-dates"><b>'+fmtMed(sale.open)+'</b> &rarr; <b>'+fmtMed(sale.close)+'</b></div>'
+    +'<div class="hero-progress-wrap"><div class="hero-progress-bar"><div class="hero-progress-fill" style="width:'+pct+'%"></div></div><span class="hero-progress-lbl">'+pct+'% through</span></div>'
+    +offerHtml+'</div>'
+    +'<div class="hero-donut-divider"></div>'
+    +'<div class="hero-donut"><svg width="'+SZ+'" height="'+SZ+'"><circle cx="'+C+'" cy="'+C+'" r="'+R+'" fill="none" stroke="var(--gray-2)" stroke-width="'+SW+'"/><circle cx="'+C+'" cy="'+C+'" r="'+R+'" fill="none" stroke="var(--green)" stroke-width="'+SW+'" stroke-dasharray="'+CIRC+'" stroke-dashoffset="'+daysOffset+'" stroke-linecap="round"/></svg>'
+    +'<div class="hero-donut-center"><span class="hero-days-num">'+daysLeft+'</span><span class="hero-days-lbl">'+(st.cls==='active'?'Days Left':'Days Away')+'</span></div></div>'
+    +'</div>';
+}
+
+// ── Table ──
+function toggleExpand(idx){
+  const row=document.getElementById('expand-'+idx);
+  if(EXPANDED.has(idx)){
+    EXPANDED.delete(idx); row.classList.remove('visible');
+    row.querySelector('td').innerHTML='';
+    const btn=document.getElementById('toggle-'+idx);
+    if(btn){btn.textContent='▶ Show';btn.classList.remove('open');}
+  } else {
+    EXPANDED.add(idx); row.classList.add('visible');
+    row.querySelector('td').innerHTML=buildEmailRows(SALES[idx],idx);
+    const btn=document.getElementById('toggle-'+idx);
+    if(btn){btn.textContent='▼ Hide';btn.classList.add('open');}
+  }
+}
+
+function buildEmailRows(sale,idx){
+  const dates=getSaleDates(sale);
+  if(!dates.length) return '<div style="padding:14px 20px;color:var(--text-3);font-size:11px;font-style:italic">No dates — set open/close dates in Google Sheets.</div>';
+  const ed=sale.emailDays||{};
+  const rows=dates.map(({dateStr,isExt})=>{
+    const d=new Date(dateStr+'T00:00:00');
+    const dateFmt=MONTHS_SHORT[d.getMonth()]+' '+d.getDate()+', '+d.getFullYear();
+    const dow=DAYS_SHORT[d.getDay()];
+    const entry=ed[dateStr]||{};
+    const subj=entry.subject||'';
+    const pre=entry.pretext||'';
+    const prods=entry.products||'';
+    return '<tr class="email-day-row'+(isExt?' ext-day':'')+'">'
+      +'<td class="date-cell"><span class="date-text">'+dateFmt+'</span>'
+      +'<span class="dow-badge '+(isExt?'dow-ext':'dow-main')+'">'+dow+'</span>'
+      +(isExt?'<span class="type-tag-ext">Extension</span>':'')+'</td>'
+      +'<td><span class="ro-email-val'+(subj?'':' empty')+'">'+escHtml(subj||'—')+'</span></td>'
+      +'<td><span class="ro-email-val'+(pre?'':' empty')+'">'+escHtml(pre||'—')+'</span></td>'
+      +'<td><span class="ro-email-val'+(prods?'':' empty')+'">'+escHtml(prods||'—')+'</span></td>'
+      +'</tr>';
+  }).join('');
+  return '<table class="email-day-table"><thead><tr><th>Date</th><th>Email Subject Line</th><th>Pre-text Line</th><th>Products / Categories</th></tr></thead><tbody>'+rows+'</tbody></table>';
+}
+
+function renderTable(){
+  const tbody=document.getElementById('table-body');
+  tbody.innerHTML='';
+  SALES.forEach((sale,i)=>{
+    const st=getStatus(sale);
+    const isMajor=sale.type==='major';
+    const md=mainDays(sale), td=totalDays(sale);
+    const {extMon,extTue}=getSaleExt(sale);
+    const isExpanded=EXPANDED.has(i);
+    const contentMk=MAJOR_CONTENT_MAP[sale.name];
+    const closeMk=sale.close?sale.close.substring(5,7):'';
+    const newItems=(closeMk&&CCAL[closeMk]&&Array.isArray(CCAL[closeMk].newProductsList))
+      ?CCAL[closeMk].newProductsList.filter(it=>it.name||it.launchDate):[];
+    const hasITP=contentMk||newItems.length>0;
+
+    // Items to Promote panel
+    let itpHtml='';
+    if(hasITP){
+      let body='';
+      if(contentMk){
+        const prods=escHtml((CCAL[contentMk]&&CCAL[contentMk].coreProducts||'').trim());
+        if(prods) body+='<div class="itp-lbl">Core Products</div><div class="itp-text">'+prods+'</div>';
+      }
+      if(newItems.length>0){
+        body+='<div class="itp-lbl" style="margin-top:'+(body?'6':'0')+'px">New to Market</div>';
+        body+=newItems.map(it=>'<div class="itp-new-item">'+escHtml(it.name||'(unnamed)')+(it.launchDate?'<span class="itp-launch-date">in-market '+ctFmtDate(it.launchDate)+'</span>':'')+'</div>').join('');
+      }
+      itpHtml='<div class="itp-wrap"><div class="itp-lbl">Items to Promote</div>'+body+'</div>';
+    }
+
+    // Extension display
+    const extHtml=(extMon||extTue)?'<div class="ro-ext">'+fmtMed(extMon)+' &rarr; '+fmtMed(extTue)+'</div>':'<span style="color:var(--text-3);font-size:11px;padding:3px 5px">—</span>';
+
+    const tr=document.createElement('tr');
+    tr.className='sale-row row-'+sale.type+(st.cls==='active'?' row-active':'');
+    tr.innerHTML='<td style="padding:0;width:3px'+(st.cls==='active'?';border-left:3px solid var(--green)':'')+'"></td>'
+      +'<td style="vertical-align:middle">'+(isMajor?'<div style="margin-bottom:3px"><span class="tentpole-pill">Tentpole Sale</span></div>':'')+'<span class="'+(isMajor?'name-major':'name-bridge')+'">'+escHtml(sale.name)+'</span></td>'
+      +'<td style="padding:6px 10px;text-align:center"><button class="toggle-btn'+(isExpanded?' open':'')+'" id="toggle-'+i+'" onclick="toggleExpand('+i+')">'+(isExpanded?'▼ Hide':'▶ Show')+'</button></td>'
+      +'<td><span class="ro-date">'+fmtFull(sale.open)+'</span></td>'
+      +'<td><span class="ro-date">'+fmtFull(sale.close)+'</span></td>'
+      +'<td><span class="ro-offer">'+escHtml(sale.offer||'—')+'</span>'+itpHtml+'</td>'
+      +'<td>'+extHtml+'</td>'
+      +'<td><div class="ro-spotlight"><span class="ro-spot-text">'+escHtml(sale.spotlightOffer||'—')+'</span>'+(sale.spotlightStart?'<span class="ro-spot-dates">'+fmtMed(sale.spotlightStart)+' &rarr; '+fmtMed(sale.spotlightEnd)+'</span>':'')+'</div></td>'
+      +'<td><span class="ro-flash-text">'+escHtml(sale.flashSale||'—')+'</span>'+(sale.flashStart?'<span class="ro-flash-dates">'+fmtMed(sale.flashStart)+' &rarr; '+fmtMed(sale.flashEnd)+'</span>':'')+'</td>'
+      +'<td class="days-cell">'+md+'</td>'
+      +'<td class="days-cell">'+td+'</td>'
+      +'<td><span class="st-pill '+st.pill+'">'+st.label+'</span></td>';
+    tbody.appendChild(tr);
+
+    const expandTr=document.createElement('tr');
+    expandTr.className='email-expand-row'+(isExpanded?' visible':'');
+    expandTr.id='expand-'+i;
+    const expandTd=document.createElement('td');
+    expandTd.className='email-expand-cell';
+    expandTd.colSpan=12;
+    expandTd.innerHTML=isExpanded?buildEmailRows(sale,i):'';
+    expandTr.appendChild(expandTd);
+    tbody.appendChild(expandTr);
+  });
+}
+
+// ── Gantt ──
+const CHART_START=new Date('2025-12-17T00:00:00');
+const CHART_END  =new Date('2026-12-31T00:00:00');
+const PX=2.6;
+function px(d){ return Math.round(daysBetween(CHART_START,d)*PX) }
+
+function buildRuler(rulerEl){
+  const totalPx=daysBetween(CHART_START,CHART_END)*PX;
+  rulerEl.style.width=totalPx+'px';
+  let html='';
+  let cur=new Date(CHART_START);
+  while(cur<=CHART_END){
+    const x=px(cur);
+    const nextM=new Date(cur.getFullYear(), cur.getMonth()+1,1);
+    const mw=daysBetween(cur,nextM)*PX;
+    html+='<div class="gantt-month-lbl" style="left:'+x+'px;width:'+mw+'px">'+MONTHS_SHORT[cur.getMonth()]+' '+cur.getFullYear()+'</div>';
+    let wk=new Date(cur);
+    while(wk<nextM&&wk<=CHART_END){
+      const wx=px(wk);
+      html+='<div class="gantt-week-tick" style="left:'+wx+'px"></div>';
+      html+='<div class="gantt-week-lbl" style="left:'+wx+'px">'+fmtShort(fmtDate(wk))+'</div>';
+      wk=addDays(wk,7);
+    }
+    cur=nextM;
+  }
+  const todayX=px(new Date()); html+='<div class="today-line" style="left:'+todayX+'px"></div>';
+  rulerEl.innerHTML=html;
+}
+
+function renderGantt(){
+  const outer=document.getElementById('gantt-outer');
+  const ruler=document.getElementById('gantt-ruler');
+  const rowsEl=document.getElementById('gantt-rows');
+  const totalPx=daysBetween(CHART_START,CHART_END)*PX;
+  outer.style.minWidth=(220+totalPx)+'px';
+  buildRuler(ruler);
+  const today=new Date(); today.setHours(0,0,0,0);
+  let html='';
+  // Month stripes
+  let cur=new Date(CHART_START);
+  let mi=0;
+  while(cur<=CHART_END){
+    const nextM=new Date(cur.getFullYear(),cur.getMonth()+1,1);
+    const x=px(cur), w=daysBetween(cur,nextM)*PX;
+    if(mi%2===0) html=''; // stripes added inside row instead
+    cur=nextM; mi++;
+  }
+  SALES.forEach((sale,i)=>{
+    if(!sale.open||!sale.close) return;
+    const st=getStatus(sale);
+    const isMajor=sale.type==='major';
+    const openD=new Date(sale.open+'T00:00:00'), closeD=new Date(sale.close+'T00:00:00');
+    const {extMon,extTue}=getSaleExt(sale);
+    const mainL=px(openD), mainW=Math.max(4,(daysBetween(openD,closeD)+1)*PX);
+    let barsHtml='<div class="'+(isMajor?'bar-major':'bar-bridge')+(st.cls==='done'?' bar-done':'')+(st.cls==='active'?' bar-active-glow':'')+'" style="left:'+mainL+'px;width:'+mainW+'px"><span class="glabel">'+escHtml(sale.name)+'</span></div>';
+    if(extMon){
+      const extL=px(new Date(extMon+'T00:00:00'));
+      const extEnd=extTue?new Date(extTue+'T00:00:00'):addDays(new Date(extMon+'T00:00:00'),1);
+      const extW=Math.max(6,(daysBetween(new Date(extMon+'T00:00:00'),extEnd)+1)*PX);
+      barsHtml+='<div class="'+(isMajor?'bar-ext-major':'bar-ext-bridge')+(st.cls==='done'?' bar-done':'')+'" style="left:'+extL+'px;width:'+extW+'px" title="Extension"></div>';
+    }
+    if(sale.spotlightStart&&sale.spotlightEnd){
+      const sl=px(new Date(sale.spotlightStart+'T00:00:00'));
+      const sw=Math.max(4,daysBetween(new Date(sale.spotlightStart+'T00:00:00'),new Date(sale.spotlightEnd+'T00:00:00'))*PX);
+      barsHtml+='<div class="bar-spotlight" style="left:'+sl+'px;width:'+sw+'px;top:34px">'+escHtml(sale.spotlightOffer?sale.spotlightOffer.substring(0,28):'Spotlight')+'</div>';
+    }
+    if(sale.flashStart&&sale.flashEnd){
+      const fl=px(new Date(sale.flashStart+'T00:00:00'));
+      const fw=Math.max(4,daysBetween(new Date(sale.flashStart+'T00:00:00'),new Date(sale.flashEnd+'T00:00:00'))*PX);
+      barsHtml+='<div class="bar-flash" style="left:'+fl+'px;width:'+fw+'px;top:34px">'+escHtml(sale.flashSale?sale.flashSale.substring(0,20):'Flash')+'</div>';
+    }
+    const todayL=px(today);
+    barsHtml+='<div class="today-line" style="left:'+todayL+'px"></div>';
+    html+='<div class="gantt-row-wrap row-'+sale.type+(st.cls==='active'?' row-active':'')+'">'
+      +'<div class="glc"><span class="gsale-name">'+escHtml(sale.name)+'</span></div>'
+      +'<div class="gtc" style="width:'+totalPx+'px">'+barsHtml+'</div></div>';
+  });
+  rowsEl.innerHTML=html;
+  // Scroll to today
+  const wrap=document.getElementById('gantt-wrap');
+  const todayPx=px(today);
+  wrap.scrollLeft=Math.max(0,todayPx-300);
+}
+
+// ── Content Calendar ──
+function renderContent(){
+  const wrap=document.getElementById('content-wrap');
+  if(!wrap) return;
+  const today=new Date();
+  const curMk=today.getFullYear()===2026?String(today.getMonth()+1).padStart(2,'0'):null;
+  let html='<table class="content-table"><colgroup><col style="width:168px">';
+  for(let m=1;m<=12;m++) html+='<col style="width:148px">';
+  html+='</colgroup><thead>';
+  html+='<tr><th class="ct-corner ct-q-hdr">FY26 Content Calendar</th>';
+  QUARTERS_DEF.forEach(q=>{ html+='<th class="ct-q-hdr '+q.cls+'" colspan="3">'+q.label+'</th>'; });
+  html+='</tr>';
+  html+='<tr><th class="ct-corner ct-q-hdr" style="font-size:9px;font-weight:400;color:rgba(255,255,255,.5)">Read-only view</th>';
+  for(let m=1;m<=12;m++){
+    const mk=String(m).padStart(2,'0');
+    const qi=Math.floor((m-1)/3);
+    const qcls=QUARTERS_DEF[qi].cls;
+    const isCur=mk===curMk;
+    const isMajorM=MAJOR_SALE_MONTHS[mk];
+    const badge=isMajorM?'<div class="ct-major-badge">'+isMajorM+'</div>':'';
+    html+='<th class="ct-m-hdr '+qcls+(isCur?' cur-month':'')+(isMajorM?' major-sale-col':'')+'">'+(isCur?'<span class="cur-month-indicator"></span>':'')+MONTHS_SHORT[m-1]+badge+'</th>';
+  }
+  html+='</tr></thead><tbody>';
+
+  CONTENT_ROW_DEFS.forEach(row=>{
+    html+='<tr><td class="ct-row-label">'+row.label+(row.sub?'<div class="ct-row-sub">'+row.sub+'</div>':'')+'</td>';
+    if(row.quarterly){
+      // One cell per quarter
+      [0,1,2,3].forEach(qi=>{
+        const firstM=qi*3+1;
+        const mk=String(firstM).padStart(2,'0');
+        const qcls=QUARTERS_DEF[qi].cls;
+        const isCurQ=curMk&&Math.floor((parseInt(curMk)-1)/3)===qi;
+        const d=CCAL[mk]||{};
+        const notes=escHtml(d.photoshoot||'');
+        const psDate=d.photoshootDate||'';
+        const concept=psDate?ctFmtDate(ctSubMonth(psDate)):'';
+        const delivery=psDate?ctFmtDate(ctAddDays14(psDate)):'';
+        let cellHtml='';
+        if(psDate) cellHtml+='<div class="ct-shoot-date">📷 '+ctFmtDate(psDate)+'</div>';
+        if(notes) cellHtml+=escHtml(notes);
+        if(concept) cellHtml+='<div class="ct-pm-row"><span class="ct-pm-lbl concept">Concept due</span><span class="ct-pm-val">'+concept+'</span></div>';
+        if(delivery) cellHtml+='<div class="ct-pm-row"><span class="ct-pm-lbl delivery">Delivery ETA</span><span class="ct-pm-val">'+delivery+'</span></div>';
+        if(!cellHtml) cellHtml='<span style="color:var(--text-3);font-style:italic;font-size:10.5px">No shoot scheduled</span>';
+        html+='<td class="ct-cell '+qcls+(isCurQ?' cur-month':'')+' quarterly" colspan="3">'+cellHtml+'</td>';
+      });
+    } else if(row.multiItem){
+      for(let m=1;m<=12;m++){
+        const mk=String(m).padStart(2,'0');
+        const qi=Math.floor((m-1)/3);
+        const qcls=QUARTERS_DEF[qi].cls;
+        const isCur=mk===curMk;
+        const isMajorCell=MAJOR_SALE_MONTHS[mk];
+        const items=(CCAL[mk]&&CCAL[mk].newProductsList)||[];
+        let cellHtml=items.length>0
+          ?items.map(it=>'<div class="npm-ro-item">'+escHtml(it.name||'(unnamed)')+(it.launchDate?'<div class="npm-ro-date">📅 '+ctFmtDate(it.launchDate)+'</div>':'')+'</div>').join('')
+          :'<span style="color:var(--text-3);font-style:italic;font-size:10.5px">—</span>';
+        html+='<td class="ct-cell '+qcls+(isCur?' cur-month':'')+(isMajorCell?' major-sale-col':'')+'">'+cellHtml+'</td>';
+      }
+    } else {
+      for(let m=1;m<=12;m++){
+        const mk=String(m).padStart(2,'0');
+        const qi=Math.floor((m-1)/3);
+        const qcls=QUARTERS_DEF[qi].cls;
+        const isCur=mk===curMk;
+        const isMajorCell=MAJOR_SALE_MONTHS[mk];
+        const val=escHtml((CCAL[mk]&&CCAL[mk][row.key])||'');
+        html+='<td class="ct-cell '+qcls+(isCur?' cur-month':'')+(isMajorCell?' major-sale-col':'')+'">'+val+'</td>';
+      }
+    }
+    html+='</tr>';
+  });
+  html+='</tbody></table>';
+  wrap.innerHTML=html;
+}
+
+// ── Photoshoot Gantt ──
+function renderPhotoshootGantt(){
+  const outer=document.getElementById('ps-gantt-outer');
+  const ruler=document.getElementById('ps-gantt-ruler');
+  const rowsEl=document.getElementById('ps-gantt-rows');
+  const totalPx=daysBetween(CHART_START,CHART_END)*PX;
+  outer.style.minWidth=(220+totalPx)+'px';
+  buildRuler(ruler);
+  const ROW_H=60;
+  let html='';
+  for(let m=1;m<=12;m++){
+    const mk=String(m).padStart(2,'0');
+    const d=CCAL[mk]||{};
+    const psDate=d.photoshootDate||'';
+    const monthName=MONTHS_SHORT[m-1]+' 2026';
+    let barsHtml='';
+    if(psDate){
+      const shootD=new Date(psDate+'T00:00:00');
+      const conceptD=new Date(ctSubMonth(psDate)+'T00:00:00');
+      const deliveryEndD=new Date(ctAddDays14(psDate)+'T00:00:00');
+      const conceptL=px(conceptD), conceptW=Math.max(8,daysBetween(conceptD,shootD)*PX);
+      const shootL=px(shootD);
+      const delivL=px(shootD)+20, delivW=Math.max(8,daysBetween(shootD,deliveryEndD)*PX);
+      const todayL=px(new Date());
+      barsHtml='<div class="ps-bar-concept" style="left:'+conceptL+'px;width:'+conceptW+'px">Concept Prep</div>'
+        +'<div class="ps-shoot-marker" style="left:'+shootL+'px" title="Shoot Day">📷</div>'
+        +'<div class="ps-bar-delivery" style="left:'+delivL+'px;width:'+delivW+'px">Editing / Delivery</div>'
+        +'<div class="today-line" style="left:'+todayL+'px"></div>';
+    } else {
+      barsHtml='<div class="ps-empty-row">No shoot scheduled</div>';
+    }
+    html+='<div class="gantt-row-wrap" style="min-height:'+ROW_H+'px">'
+      +'<div class="glc"><span class="gsale-name">'+monthName+'</span>'+(psDate?'<span class="ps-month-badge">📷 '+fmtMed(psDate)+'</span>':'')+'</div>'
+      +'<div class="gtc" style="width:'+totalPx+'px">'+barsHtml+'</div></div>';
+  }
+  rowsEl.innerHTML=html;
+  const wrap=document.getElementById('ps-gantt-wrap');
+  wrap.scrollLeft=Math.max(0,px(new Date())-300);
+}
+
+// ── Auto-refresh ──
+setInterval(loadAllData, REFRESH_INTERVAL_MS);
+
+// ── Init ──
+loadAllData();
+</script>
+</body>
+</html>

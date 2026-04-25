@@ -2,41 +2,53 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>WVH — 2026 Sales Calendar</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg:           #F5F5F7;
+  /* ── TWVH Brand Palette ── */
+  --pine:         #304D36;   /* primary green */
+  --pine-mid:     #3D6145;   /* mid pine */
+  --pine-pale:    #E8F0E9;   /* light pine tint */
+  --walnut:       #3B2924;   /* dark brown */
+  --oak:          #804F30;   /* warm oak */
+  --oak-pale:     #F5EDE6;   /* light oak tint */
+  --maple:        #CC8A3D;   /* golden maple */
+  --mahogany:     #5C3326;   /* deep mahogany */
+  --offwhite:     #E8E5E3;   /* brand off-white */
+
+  /* ── Mapped design tokens ── */
+  --bg:           #faf9f7;
   --surface:      #FFFFFF;
-  --dark:         #1D1D1F;
-  --green:        #1A7A3C;
-  --green-mid:    #1F8F46;
-  --green-pale:   #E6F4EC;
-  --gray-1:       #F5F5F7;
-  --gray-2:       #E8E8ED;
-  --gray-3:       #D2D2D7;
-  --gray-4:       #86868B;
-  --gray-5:       #6E6E73;
-  --text:         #1D1D1F;
-  --text-2:       #6E6E73;
-  --text-3:       #86868B;
-  --border:       rgba(0,0,0,0.09);
-  --border-s:     #D2D2D7;
-  --blue:         #0071E3;
-  --spot-color:   #6E2FBE;
-  --flash-color:  #C0392B;
+  --dark:         #3B2924;   /* walnut */
+  --green:        #304D36;   /* pine */
+  --green-mid:    #3D6145;
+  --green-pale:   #E8F0E9;
+  --gray-1:       #F5F3F1;
+  --gray-2:       #EAE7E4;
+  --gray-3:       #D4D1CF;
+  --gray-4:       #8A8480;
+  --gray-5:       #6E6A66;
+  --text:         #3B2924;
+  --text-2:       #6E6A66;
+  --text-3:       #8A8480;
+  --border:       rgba(59,41,36,0.1);
+  --border-s:     #D4D1CF;
+  --blue:         #804F30;   /* oak — replaces blue for extension dates */
+  --spot-color:   #5C3326;   /* mahogany — spotlight */
+  --flash-color:  #5C3326;
   --r:            8px;
   --r-lg:         12px;
   --r-xl:         20px;
-  --shadow-sm:    0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
-  --shadow:       0 4px 16px rgba(0,0,0,0.07), 0 1px 3px rgba(0,0,0,0.05);
-  --shadow-lg:    0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.05);
+  --shadow-sm:    0 1px 3px rgba(59,41,36,0.07), 0 1px 2px rgba(59,41,36,0.05);
+  --shadow:       0 4px 16px rgba(59,41,36,0.08), 0 1px 3px rgba(59,41,36,0.06);
+  --shadow-lg:    0 8px 32px rgba(59,41,36,0.09), 0 2px 8px rgba(59,41,36,0.06);
 }
 
 *,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0 }
 body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-       font-size: 13px; background: var(--bg); color: var(--text);
+       font-size: 20px; background: var(--bg); color: var(--text);
        min-height: 100vh; -webkit-font-smoothing: antialiased }
 
 /* ── Loading overlay ── */
@@ -61,28 +73,28 @@ body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 .topbar { background: rgba(255,255,255,0.82); backdrop-filter: saturate(180%) blur(20px);
           -webkit-backdrop-filter: saturate(180%) blur(20px);
           border-bottom: 1px solid rgba(0,0,0,0.1);
-          padding: 0 24px; display: flex; align-items: center; gap: 0;
-          height: 52px; position: sticky; top: 0; z-index: 100 }
+          padding: 0 40px; display: flex; align-items: center; gap: 0;
+          height: 56px; position: sticky; top: 0; z-index: 100 }
 .topbar-left { display: flex; align-items: center; gap: 0; flex: 1 }
-.wvh-logo { font-size: 19px; font-weight: 800; letter-spacing: -.04em; color: var(--dark) }
-.tb-sep { width: 1px; height: 16px; background: rgba(0,0,0,0.12); margin: 0 14px }
-.tb-sub { font-size: 12px; font-weight: 400; color: var(--text-2) }
-.topbar-tabs { display: flex; gap: 3px }
+.wvh-logo { font-size: 21px; font-weight: 800; letter-spacing: -.04em; color: var(--dark) }
+.tb-sep { width: 1px; height: 18px; background: rgba(0,0,0,0.12); margin: 0 16px }
+.tb-sub { font-size: 13px; font-weight: 400; color: var(--text-2) }
+.topbar-tabs { display: flex; gap: 4px }
 .tab-btn { background: none; border: none; cursor: pointer; color: var(--text-2);
-           padding: 7px 18px; border-radius: 20px; font-size: 13px; font-weight: 500;
+           padding: 8px 20px; border-radius: 20px; font-size: 14px; font-weight: 500;
            letter-spacing: .01em; transition: all .15s }
 .tab-btn.active { background: var(--dark); color: #fff; font-weight: 600 }
 .tab-btn:hover:not(.active) { background: rgba(0,0,0,0.06); color: var(--dark) }
-.topbar-right { display: flex; align-items: center; gap: 10px }
-.last-updated { font-size: 10.5px; color: var(--text-3); white-space: nowrap }
+.topbar-right { display: flex; align-items: center; gap: 12px }
+.last-updated { font-size: 12px; color: var(--text-3); white-space: nowrap }
 .refresh-btn { background: none; border: 1px solid var(--border-s); border-radius: 20px;
-               padding: 4px 12px; font-size: 11px; font-weight: 500; color: var(--text-2);
+               padding: 5px 14px; font-size: 12px; font-weight: 500; color: var(--text-2);
                cursor: pointer; transition: all .15s; font-family: inherit }
 .refresh-btn:hover { border-color: var(--green); color: var(--green) }
 
 /* ── Hero ── */
 .dashboard-row { display: flex; align-items: center; background: var(--surface);
-                 border-bottom: 1px solid var(--border); padding: 12px 24px; gap: 0; min-height: 90px }
+                 border-bottom: 1px solid var(--border); padding: 14px 40px; gap: 0; min-height: 96px }
 .dash-sale { display: flex; align-items: center; gap: 14px }
 .hero-donut { position: relative; flex-shrink: 0; width: 106px; height: 106px }
 .hero-donut svg { transform: rotate(-90deg) }
@@ -109,44 +121,51 @@ body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
                      border-radius: 4px; overflow: hidden }
 .hero-progress-fill { height: 100%; background: var(--green); border-radius: 4px }
 .hero-progress-lbl { font-size: 10px; color: var(--text-3); white-space: nowrap }
-.hero-offer-text { font-size: 11px; color: #7A5500; margin-top: 5px; font-weight: 500 }
+.hero-offer-text { font-size: 11px; color: var(--maple); margin-top: 5px; font-weight: 500 }
 .hero-offer-text strong { margin-right: 4px }
+.hero-donut-wrap { display: flex; flex-direction: column; align-items: center; gap: 5px }
+.hero-donut-lbl { font-size: 9.5px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase;
+                  color: var(--text-3); white-space: nowrap }
 
 /* ── Views ── */
-.view { display: none; padding: 12px 18px 28px }
+.view { display: none; padding: 16px 40px 36px }
 .view.active { display: block }
-.section-title { font-size: 11px; font-weight: 600; letter-spacing: .07em; text-transform: uppercase;
-                 color: var(--text-3); margin-bottom: 10px }
+.section-title { font-size: 12px; font-weight: 600; letter-spacing: .07em; text-transform: uppercase;
+                 color: var(--text-3); margin-bottom: 12px }
 
 /* ── Read-only text display ── */
-.ro-text { display: block; font-size: 12px; color: var(--text); padding: 3px 5px; line-height: 1.4 }
-.ro-date { display: block; font-size: 12.5px; font-weight: 700; color: var(--dark);
-           letter-spacing: -.01em; padding: 3px 5px; white-space: nowrap }
-.ro-offer { display: block; font-size: 11.5px; color: #7A5500; padding: 3px 5px;
-            font-weight: 500; max-width: 220px; line-height: 1.35 }
-.ro-ext { display: flex; align-items: center; gap: 6px; padding: 3px 5px;
-          font-size: 11px; color: var(--blue); font-weight: 600; white-space: nowrap }
-.ro-spotlight { display: flex; flex-direction: column; gap: 3px; padding: 3px 5px }
-.ro-spot-text { font-size: 11px; color: var(--spot-color); font-weight: 500 }
-.ro-spot-dates { font-size: 10.5px; color: var(--text-3) }
-.ro-flash-text { font-size: 11px; color: var(--flash-color); font-weight: 500; padding: 3px 5px }
-.ro-flash-dates { font-size: 10.5px; color: var(--text-3); padding: 0 5px 3px }
+.ro-text { display: block; font-size: 13px; color: var(--text); padding: 4px 6px; line-height: 1.4 }
+.ro-date { display: block; font-size: 13.5px; font-weight: 700; color: var(--dark);
+           letter-spacing: -.01em; padding: 4px 6px; white-space: nowrap }
+.ro-offer { display: inline-block; font-size: 13px; color: #fff; padding: 5px 12px;
+            font-weight: 600; max-width: 240px; line-height: 1.35;
+            background: var(--pine); border-radius: 20px; margin: 3px 5px }
+.ro-offer-lg { font-size: 13px; font-weight: 600; max-width: 240px }
+.ro-ext { display: flex; align-items: center; gap: 6px; padding: 4px 6px;
+          font-size: 12px; color: var(--blue); font-weight: 600; white-space: nowrap }
+.ro-spotlight { display: flex; flex-direction: column; gap: 3px; padding: 4px 6px }
+.ro-spot-text { font-size: 12px; color: var(--spot-color); font-weight: 500 }
+.ro-spot-dates { font-size: 11.5px; color: var(--text-3) }
+.ro-flash-text { font-size: 12px; color: var(--flash-color); font-weight: 500; padding: 4px 6px }
+.ro-flash-dates { font-size: 11px; color: var(--text-3); padding: 0 6px 4px }
 
 /* ── Table ── */
-.table-wrap { overflow-x: auto; overflow-y: auto; max-height: calc(100vh - 200px);
+.table-wrap { overflow-x: auto; overflow-y: auto; max-height: calc(100vh - 210px);
               border-radius: var(--r-lg); border: 1px solid var(--border);
               background: var(--surface); box-shadow: var(--shadow-sm) }
 .calendar-table { width: 100%; border-collapse: collapse; background: var(--surface) }
 .calendar-table th { background: var(--dark); color: rgba(255,255,255,.7);
-                     padding: 7px 10px; font-size: 9.5px; font-weight: 500; text-align: left;
+                     padding: 9px 12px; font-size: 11px; font-weight: 500; text-align: left;
                      white-space: nowrap; letter-spacing: .06em; text-transform: uppercase;
                      position: sticky; top: 0; z-index: 20 }
 .calendar-table th.th-spot  { background: #2D1A50 }
 .calendar-table th.th-flash { background: #4A1212 }
-.calendar-table td { padding: 5px 8px; border-bottom: 1px solid var(--border); vertical-align: middle }
+.calendar-table td { padding: 7px 10px; border-bottom: 1px solid var(--border); vertical-align: middle }
 .calendar-table tr.sale-row:hover td { background: var(--gray-1) }
 .calendar-table tr.row-active td { background: var(--green-pale) !important }
 .calendar-table tr.row-active td:first-child { border-left: 3px solid var(--green) }
+.calendar-table tr.row-done td { opacity: 0.5 }
+.calendar-table tr.row-done:hover td { opacity: 0.9 }
 
 .st-pill   { display: inline-block; font-size: 9.5px; padding: 2px 7px; border-radius: 20px;
              white-space: nowrap; font-weight: 500 }
@@ -162,97 +181,59 @@ body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
                  text-transform: uppercase; background: var(--dark); color: #fff;
                  border-radius: 20px; padding: 2px 10px; line-height: 1.6 }
 
-/* Email expand rows */
-.toggle-btn { background: transparent; border: 1px solid var(--border-s); color: var(--text-3);
-              font-size: 9.5px; font-weight: 500; border-radius: 20px; padding: 2px 7px;
-              white-space: nowrap; cursor: pointer; transition: all .15s;
-              display: flex; align-items: center; gap: 3px }
-.toggle-btn:hover  { border-color: var(--green); color: var(--green) }
-.toggle-btn.open   { background: var(--green); color: #fff; border-color: var(--green) }
-.email-expand-row { display: none }
-.email-expand-row.visible { display: table-row }
-.email-expand-cell { padding: 0 !important; border-bottom: 2px solid var(--green) !important;
-                     background: var(--gray-1) }
-.email-day-table { width: 100%; border-collapse: collapse }
-.email-day-table thead th { background: #1D1D1F; color: rgba(255,255,255,.6); padding: 8px 14px;
-                             font-size: 9.5px; font-weight: 500; text-transform: uppercase;
-                             letter-spacing: .06em; position: static }
-.email-day-table thead th:first-child { width: 210px }
-.email-day-row { border-bottom: 1px solid var(--border) }
-.email-day-row:last-child { border-bottom: none }
-.email-day-row td { padding: 8px 14px; vertical-align: middle; background: #fff }
-.email-day-row.ext-day td { background: #F0F5FF }
-.date-cell  { white-space: nowrap; min-width: 190px }
-.date-text  { font-weight: 600; font-size: 12px; color: var(--dark) }
-.ext-day .date-text { color: var(--blue) }
-.dow-badge  { display: inline-block; font-size: 8.5px; font-weight: 600; border-radius: 4px;
-              padding: 1px 5px; letter-spacing: .04em; vertical-align: middle; margin-left: 5px }
-.dow-main { background: var(--dark); color: #fff }
-.dow-ext  { background: var(--blue); color: #fff }
-.type-tag-ext { font-size: 8.5px; padding: 1px 6px; border-radius: 20px; font-weight: 500;
-                margin-left: 5px; background: #DBEAFE; color: #1D4ED8 }
-.ro-email-val { font-size: 12px; color: var(--text) }
-.ro-email-val.empty { color: var(--text-3); font-style: italic }
 
-/* Items to Promote */
-.itp-wrap { margin-top: 6px; border-top: 1px solid rgba(0,0,0,0.1); padding-top: 5px }
-.itp-lbl { font-size: 8.5px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
-           color: var(--text-3); margin-bottom: 3px }
-.itp-text { font-size: 10.5px; color: var(--text); line-height: 1.5; white-space: pre-wrap }
-.itp-new-item { font-size: 10.5px; color: var(--dark); font-weight: 600; padding: 2px 0;
-                border-bottom: 1px solid var(--border); line-height: 1.4 }
-.itp-new-item:last-child { border-bottom: none }
-.itp-launch-date { font-size: 9px; font-weight: 400; color: var(--text-3); margin-left: 4px }
+
+
 
 /* ── Gantt ── */
 .gantt-wrap { overflow-x: auto; overflow-y: auto; max-height: calc(100vh - 175px);
               border-radius: var(--r-lg); border: 1px solid var(--border);
               background: var(--surface); box-shadow: var(--shadow-sm) }
 .gantt-outer { background: var(--surface); position: relative }
-.gantt-header-row { display: flex; position: sticky; top: 0; z-index: 30; background: var(--dark);
+.gantt-header-row { display: flex; position: sticky; top: 0; z-index: 30; background: var(--pine);
                     border-radius: var(--r-lg) var(--r-lg) 0 0; overflow: hidden }
-.gantt-row-wrap { display: flex; border-bottom: 1px solid var(--border); min-height: 66px }
+.gantt-row-wrap { display: flex; border-bottom: 1px solid var(--border); min-height: 80px }
 .gantt-row-wrap:last-child { border-bottom: none }
 .gantt-row-wrap:nth-child(even) { background: var(--gray-1) }
 .gantt-row-wrap:hover { background: var(--gray-2) }
 .gantt-row-wrap.row-active { background: var(--green-pale) !important }
-.glc { flex: 0 0 220px; min-width: 220px; position: sticky; left: 0; z-index: 10;
-       background: inherit; padding: 8px 14px; display: flex; align-items: center;
+.glc { flex: 0 0 260px; min-width: 260px; position: sticky; left: 0; z-index: 10;
+       background: inherit; padding: 10px 18px; display: flex; align-items: center;
        gap: 6px; flex-wrap: wrap; border-right: 1px solid var(--border) }
-.gantt-header-row .glc { background: var(--dark); color: #fff; font-weight: 600; font-size: 11px;
-                          justify-content: center; min-height: 58px; border-right-color: rgba(255,255,255,.08) }
+.gantt-header-row .glc { background: var(--dark); color: #fff; font-weight: 600; font-size: 13px;
+                          justify-content: center; min-height: 72px; border-right-color: rgba(255,255,255,.08) }
 .gtc { flex: 1; position: relative; overflow: visible }
-.gantt-header-row .gtc { min-height: 58px }
-.bar-major,.bar-bridge { position: absolute; top: 5px; height: 24px; border-radius: 5px 0 0 5px;
-                          display: flex; align-items: center; padding: 0 8px; white-space: nowrap;
-                          overflow: hidden; font-size: 10px; font-weight: 600; cursor: default }
+.gantt-header-row .gtc { min-height: 72px }
+.bar-major,.bar-bridge { position: absolute; top: 8px; height: 32px; border-radius: 6px 0 0 6px;
+                          display: flex; align-items: center; padding: 0 12px; white-space: nowrap;
+                          overflow: hidden; font-size: 12px; font-weight: 600; cursor: default }
 .bar-major  { background: var(--dark); color: #fff }
 .bar-bridge { background: var(--gray-3); color: var(--gray-5) }
-.bar-ext-major,.bar-ext-bridge { position: absolute; top: 5px; height: 24px; border-radius: 0 5px 5px 0;
+.bar-ext-major,.bar-ext-bridge { position: absolute; top: 8px; height: 32px; border-radius: 0 6px 6px 0;
                                    display: flex; align-items: center; justify-content: center;
-                                   font-size: 9px; font-weight: 600; cursor: default }
+                                   font-size: 11px; font-weight: 600; cursor: default }
 .bar-ext-major  { background: var(--green); color: #fff; border-left: 2px dashed rgba(255,255,255,.3) }
 .bar-ext-bridge { background: #B8D4B0; color: #1A4A1A; border-left: 2px dashed rgba(26,74,26,.25) }
 .bar-done { opacity: .28 }
 .bar-active-glow { box-shadow: 0 0 0 2px var(--green) }
-.bar-spotlight { position: absolute; height: 9px; border-radius: 4px; background: var(--spot-color);
-                 cursor: default; display: flex; align-items: center; padding: 0 5px;
-                 overflow: hidden; font-size: 7.5px; font-weight: 700; color: #fff; white-space: nowrap }
-.bar-flash { position: absolute; height: 9px; border-radius: 4px; background: var(--flash-color);
-             cursor: default; display: flex; align-items: center; padding: 0 5px;
-             overflow: hidden; font-size: 7.5px; font-weight: 700; color: #fff; white-space: nowrap }
-.gantt-month-lbl { position: absolute; top: 0; height: 28px; font-size: 10px; font-weight: 500;
-                   color: rgba(255,255,255,.55); border-right: 1px solid rgba(255,255,255,.07);
-                   display: flex; align-items: center; justify-content: center; overflow: hidden; letter-spacing: .03em }
-.gantt-week-tick { position: absolute; top: 28px; width: 1px; height: 8px; background: rgba(255,255,255,.18) }
-.gantt-week-lbl  { position: absolute; top: 38px; font-size: 8px; color: rgba(255,255,255,.38);
+.bar-spotlight { position: absolute; height: 11px; border-radius: 4px; background: var(--spot-color);
+                 cursor: default; display: flex; align-items: center; padding: 0 6px;
+                 overflow: hidden; font-size: 9px; font-weight: 700; color: #fff; white-space: nowrap }
+.bar-flash { position: absolute; height: 11px; border-radius: 4px; background: var(--flash-color);
+             cursor: default; display: flex; align-items: center; padding: 0 6px;
+             overflow: hidden; font-size: 9px; font-weight: 700; color: #fff; white-space: nowrap }
+.gantt-month-lbl { position: absolute; top: 0; height: 38px; font-size: 13px; font-weight: 600;
+                   color: rgba(255,255,255,.75); border-right: 1px solid rgba(255,255,255,.1);
+                   display: flex; align-items: center; justify-content: center; overflow: hidden; letter-spacing: .02em }
+.gantt-week-tick { position: absolute; top: 38px; width: 1px; height: 10px; background: rgba(255,255,255,.2) }
+.gantt-week-lbl  { position: absolute; top: 50px; font-size: 9.5px; color: rgba(255,255,255,.45);
                    transform: translateX(-50%); white-space: nowrap }
 .today-line { position: absolute; top: 0; width: 2px; height: 100%;
               background: #FF3B30; opacity: .65; pointer-events: none; z-index: 6 }
-.today-line::after { content: 'TODAY'; position: absolute; top: 2px; left: 3px; font-size: 7px;
+.today-line::after { content: 'TODAY'; position: absolute; top: 2px; left: 3px; font-size: 8px;
                      font-weight: 700; color: #FF3B30; white-space: nowrap; letter-spacing: .05em }
 .month-stripe { position: absolute; top: 0; height: 100%; background: rgba(0,0,0,0.018); pointer-events: none }
-.gsale-name { font-size: 11.5px; flex: 1; line-height: 1.2; color: var(--dark); font-weight: 600 }
+.gsale-name { font-size: 13px; flex: 1; line-height: 1.2; color: var(--dark); font-weight: 600 }
 .row-bridge .gsale-name { font-weight: 400; font-style: italic; color: var(--text-2) }
 
 /* ── Legend ── */
@@ -291,39 +272,37 @@ body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
                 background: var(--surface); box-shadow: var(--shadow-sm) }
 .content-table { border-collapse: collapse; table-layout: fixed }
 .content-table thead tr:first-child th { position: sticky; top: 0; z-index: 22 }
-.content-table thead tr:nth-child(2) th { position: sticky; top: 32px; z-index: 21 }
+.content-table thead tr:nth-child(2) th { position: sticky; top: 36px; z-index: 21 }
 .ct-corner { position: sticky !important; left: 0; z-index: 30 !important;
-             background: var(--dark) !important; text-align: left !important; width: 168px; min-width: 168px }
-.ct-q-hdr { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
-            color: rgba(255,255,255,.9); text-align: center; padding: 8px 12px; height: 32px }
-.ct-q1 { background: #1A3D52 } .ct-q2 { background: #1A4030 }
-.ct-q3 { background: #4A3010 } .ct-q4 { background: #38184A }
-.ct-m-hdr { font-size: 10.5px; font-weight: 600; text-align: center; padding: 7px 6px;
-            color: rgba(255,255,255,.85); width: 148px; min-width: 148px; height: 32px; letter-spacing: .01em }
+             background: var(--pine) !important; text-align: left !important; width: 190px; min-width: 190px }
+.ct-q-hdr { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+            color: rgba(255,255,255,.9); text-align: center; padding: 10px 14px; height: 36px }
+.ct-q1 { background: var(--pine) } .ct-q2 { background: var(--pine) }
+.ct-q3 { background: var(--pine) } .ct-q4 { background: var(--pine) }
+.ct-m-hdr { font-size: 12px; font-weight: 600; text-align: center; padding: 8px 6px;
+            color: rgba(255,255,255,.85); width: 170px; min-width: 170px; height: 36px; letter-spacing: .01em }
 .ct-m-hdr.cur-month { color: #fff; font-weight: 800 }
-.ct-m-hdr.major-sale-col { outline: 2px solid rgba(180,120,0,0.55); outline-offset: -2px }
+.ct-m-hdr.major-sale-col { outline: none }
 .ct-row-label { position: sticky; left: 0; z-index: 10; background: var(--gray-1);
                 border-right: 2px solid var(--border); border-bottom: 1px solid var(--border);
-                padding: 10px 12px; font-size: 10px; font-weight: 700; color: var(--dark);
+                padding: 12px 14px; font-size: 11px; font-weight: 700; color: var(--dark);
                 letter-spacing: .03em; text-transform: uppercase; vertical-align: top;
-                white-space: nowrap; width: 168px; min-width: 168px }
-.ct-row-sub { font-size: 9px; font-weight: 400; color: var(--text-3); text-transform: none;
-              letter-spacing: 0; margin-top: 2px }
+                white-space: nowrap; width: 190px; min-width: 190px }
+.ct-row-sub { font-size: 10px; font-weight: 400; color: var(--text-3); text-transform: none;
+              letter-spacing: 0; margin-top: 3px }
 .ct-cell { border-bottom: 1px solid var(--border); border-right: 1px solid var(--border);
-           padding: 6px 8px; vertical-align: top; font-size: 11px; line-height: 1.55;
+           padding: 8px 10px; vertical-align: top; font-size: 12.5px; line-height: 1.6;
            color: var(--text); white-space: pre-wrap }
-.ct-cell.ct-q1 { background: #F5F9FC } .ct-cell.ct-q1.cur-month { background: #EAF4FB }
-.ct-cell.ct-q2 { background: #F5FBF7 } .ct-cell.ct-q2.cur-month { background: #E8F7ED }
-.ct-cell.ct-q3 { background: #FDFAF4 } .ct-cell.ct-q3.cur-month { background: #FBF4E2 }
-.ct-cell.ct-q4 { background: #FAF6FC } .ct-cell.ct-q4.cur-month { background: #F3EAF9 }
-.ct-cell.major-sale-col { background: #FFF8ED !important }
-.ct-cell.major-sale-col.cur-month { background: #FFF0D0 !important }
+.ct-cell.ct-q1 { background: #F7F7F8 } .ct-cell.ct-q1.cur-month { background: #E6F4EC }
+.ct-cell.ct-q2 { background: #F7F7F8 } .ct-cell.ct-q2.cur-month { background: #E6F4EC }
+.ct-cell.ct-q3 { background: #F7F7F8 } .ct-cell.ct-q3.cur-month { background: #E6F4EC }
+.ct-cell.ct-q4 { background: #F7F7F8 } .ct-cell.ct-q4.cur-month { background: #E6F4EC }
+.ct-cell.major-sale-col { background: #F7F7F8 }
+.ct-cell.major-sale-col.cur-month { background: #E6F4EC }
 .ct-cell.quarterly { white-space: normal }
-.ct-major-badge { display: inline-block; font-size: 8px; font-weight: 700; letter-spacing: .05em;
-                  text-transform: uppercase; background: rgba(180,120,0,0.85); color: #fff;
-                  border-radius: 10px; padding: 1px 6px; margin-top: 3px; line-height: 1.5 }
+.ct-major-badge { display: none }
 .cur-month-indicator { display: block; width: 5px; height: 5px; border-radius: 50%;
-                       background: var(--green); margin: 0 auto 2px }
+                       background: var(--pine); margin: 0 auto 2px }
 .ct-shoot-date { font-size: 11px; font-weight: 700; color: var(--dark); margin-bottom: 4px }
 .ct-pm-row { display: flex; align-items: baseline; gap: 6px; margin-top: 3px }
 .ct-pm-lbl { font-size: 8.5px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
@@ -367,7 +346,7 @@ body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     <div class="topbar-tabs">
       <button class="tab-btn active" onclick="switchTab('table',this)">2026 Sales Calendar</button>
       <button class="tab-btn" onclick="switchTab('gantt',this)">Sales Gantt</button>
-      <button class="tab-btn" onclick="switchTab('content',this)">Content Planner</button>
+      <button class="tab-btn" onclick="switchTab('content',this)">Creative &amp; Content Planner</button>
       <button class="tab-btn" onclick="switchTab('photoshoot',this)">Photoshoot Timeline</button>
     </div>
   </div>
@@ -387,14 +366,15 @@ body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       <thead>
         <tr>
           <th style="width:20px"></th>
-          <th style="min-width:180px">Sale Name</th>
-          <th style="width:58px">Emails</th>
+          <th style="min-width:180px">US Sale</th>
+          <th style="min-width:160px">UK Sale</th>
           <th style="min-width:110px">Opens (Wed)</th>
           <th style="min-width:110px">Closes (Sun)</th>
-          <th style="min-width:220px">Sale Offer</th>
+          <th style="min-width:180px">Sale Offer</th>
+          <th style="min-width:200px">Items to Promote</th>
+          <th style="min-width:200px">New Products to Market</th>
           <th style="min-width:148px">Extension</th>
           <th class="th-spot"  style="min-width:180px">Spotlight Offer</th>
-          <th class="th-flash" style="min-width:180px">Flash Sale</th>
           <th style="width:38px">Days</th>
           <th style="width:38px">Total</th>
           <th style="width:78px">Status</th>
@@ -442,9 +422,8 @@ body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     </div>
   </div>
   <div class="legend" style="margin-top:14px">
-    <div class="leg-section"><div class="leg-dot" style="background:var(--spot-color)"></div><span class="leg-label">Concept Prep</span></div>
-    <div class="leg-section"><div class="leg-dot" style="background:var(--dark)"></div><span class="leg-label">Shoot Day</span></div>
-    <div class="leg-section"><div class="leg-dot" style="background:var(--green)"></div><span class="leg-label">Editing / Delivery</span></div>
+    <div class="leg-section"><div class="leg-dot" style="background:var(--spot-color)"></div><span class="leg-label">Shoot prep window (before sale opens)</span></div>
+    <div class="leg-section"><span style="font-size:14px;line-height:1">📷</span><span class="leg-label" style="margin-left:6px">Sale opens — photos due by this date</span></div>
   </div>
 </div>
 
@@ -457,9 +436,10 @@ const API_KEY  = 'AIzaSyBZz-YgIsQ30wGK-ETnznVaehs7fsMc7RY';
 const REFRESH_INTERVAL_MS = 5 * 60 * 1000; // auto-refresh every 5 min
 
 // ── State ──
-let SALES = [];
-let CCAL  = {};
-const EXPANDED = new Set();
+let SALES       = [];
+let CCAL        = {};
+let NTM_FLAT    = []; // flat list of {name, launchDate} for new-to-market items
+let MAJOR_MONTHS = new Set(); // month keys (MM) that contain a major sale — derived from Sales sheet
 const MONTHS_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 const DAYS_SHORT   = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 const QUARTERS_DEF = [
@@ -477,11 +457,8 @@ const MAJOR_CONTENT_MAP = {
 const MAJOR_SALE_MONTHS = { "02":"Presidents' Day", "05":"Memorial Day", "09":"Labor Day", "11":"Black Friday" };
 const CONTENT_ROW_DEFS = [
   { key:'seasonalFeel',  label:'Seasonal Feel',           sub:'' },
-  { key:'photoshoot',    label:'Photoshoot',               sub:'Quarterly shoot dates', quarterly:true },
-  { key:'holidays',      label:'Holidays & Sales',         sub:'Notable dates to support' },
   { key:'themes',        label:'Themes / Narratives',      sub:'Campaign messaging' },
-  { key:'categoryFocus', label:'Category / Color Focus',   sub:'Visual & product direction' },
-  { key:'coreProducts',  label:'Core Products',            sub:'5 featured SKUs' },
+  { key:'photoshoot',    label:'Photoshoot',               sub:'1 month before each sale opens', shootRow:true },
   { key:'newProducts',   label:'New to Market',            sub:'New product launches', multiItem:true },
   { key:'reelIdeas',     label:'Instagram Reels',          sub:'2–4 reel concepts' },
 ];
@@ -490,6 +467,16 @@ const CONTENT_ROW_DEFS = [
 function escHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;') }
 function addDays(d,n){ const r=new Date(d); r.setDate(r.getDate()+n); return r }
 function fmtDate(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0') }
+// normalizeDate: convert any date format Google Sheets returns into YYYY-MM-DD
+function normalizeDate(s){
+  if(!s) return '';
+  s=String(s).trim();
+  if(/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+  // Try parsing formats like M/D/YYYY, MM/DD/YYYY, "Jan 7, 2026", etc.
+  const d=new Date(s);
+  if(!isNaN(d.getTime())) return fmtDate(d);
+  return '';
+}
 function fmtMed(s){ if(!s) return ''; const d=new Date(s+'T00:00:00'); return MONTHS_SHORT[d.getMonth()]+' '+d.getDate() }
 function fmtShort(s){ if(!s) return ''; const d=new Date(s+'T00:00:00'); return MONTHS_SHORT[d.getMonth()].substring(0,3)+' '+d.getDate() }
 function fmtFull(s){ if(!s) return ''; const d=new Date(s+'T00:00:00'); return MONTHS_SHORT[d.getMonth()]+' '+d.getDate()+', '+d.getFullYear() }
@@ -504,6 +491,33 @@ function getSaleExt(sale){
   const extMon=sale.extStart||fmtDate(addDays(new Date(sale.close+'T00:00:00'),1));
   const extTue=sale.extEnd  ||fmtDate(addDays(new Date(sale.close+'T00:00:00'),2));
   return {extMon,extTue};
+}
+// Given a sale's open date, return the "shoot month" key (MM).
+// Rule: always 1 calendar month prior to the sale open date.
+function getShootMonthKey(openDateStr){
+  if(!openDateStr) return null;
+  const d=new Date(openDateStr+'T00:00:00');
+  const prev=new Date(d.getFullYear(),d.getMonth()-1,1);
+  return String(prev.getMonth()+1).padStart(2,'0');
+}
+// Returns the recommended photoshoot date: 30 days before the sale opens
+function calcShootDate(openDateStr){
+  if(!openDateStr) return '';
+  const d=new Date(openDateStr+'T00:00:00');
+  d.setDate(d.getDate()-30);
+  return fmtDate(d);
+}
+// Build map: shoot month key → array of sales needing a shoot that month.
+// Only includes sales that have coreItems filled in.
+function buildShootMap(){
+  const map={};
+  for(let m=1;m<=12;m++) map[String(m).padStart(2,'0')]=[];
+  SALES.forEach(sale=>{
+    if(!sale.open) return;
+    const mk=getShootMonthKey(sale.open);
+    if(mk&&map[mk]) map[mk].push(sale);
+  });
+  return map;
 }
 function getStatus(sale){
   const today=new Date(); today.setHours(0,0,0,0);
@@ -538,43 +552,44 @@ async function fetchRange(tab, range){
 }
 
 function parseSales(rows){
+  // Column layout: A(0):US Name  B(1):UK Name  C(2):Type  D(3):Open  E(4):Close
+  //                F(5):Offer  G(6):Core Items  H(7):Ext Offer  I(8):Ext Start  J(9):Ext End
+  //                K(10):Spotlight Offer  L(11):Spotlight Start  M(12):Spotlight End
   SALES=rows.filter(r=>r&&r[0]).map((r,i)=>({
-    id:i, name:r[0]||'', type:(r[1]||'bridge').toLowerCase(),
-    open:r[2]||'', close:r[3]||'', offer:r[4]||'',
-    extStart:r[5]||'', extEnd:r[6]||'',
-    spotlightOffer:r[7]||'', spotlightStart:r[8]||'', spotlightEnd:r[9]||'',
-    flashSale:r[10]||'', flashStart:r[11]||'', flashEnd:r[12]||'',
-    emailDays:{}
+    id:i, name:r[0]||'', nameUK:r[1]||'', type:(r[2]||'bridge').toLowerCase(),
+    open:normalizeDate(r[3]), close:normalizeDate(r[4]), offer:r[5]||'',
+    coreItems:r[6]||'', extOffer:r[7]||'',
+    extStart:normalizeDate(r[8]), extEnd:normalizeDate(r[9]),
+    spotlightOffer:r[10]||'', spotlightStart:normalizeDate(r[11]), spotlightEnd:normalizeDate(r[12]),
   }));
-}
-function parseEmailSchedule(rows){
-  const map={};
-  rows.filter(r=>r&&r[0]&&r[1]).forEach(r=>{
-    const name=r[0], date=r[1];
-    if(!map[name]) map[name]={};
-    map[name][date]={subject:r[2]||'',pretext:r[3]||'',products:r[4]||''};
-  });
-  SALES.forEach(s=>{ s.emailDays=map[s.name]||{}; });
 }
 function parseContentCalendar(rows, newProdRows){
   CCAL={};
+  // Column layout after sheet cleanup:
+  // A(0): Month  B(1): Seasonal Feel  C(2): Photoshoot Notes
+  // D(3): Themes  E(4): Category Focus  F(5): Reel Ideas
   rows.filter(r=>r&&r[0]).forEach(r=>{
-    const mk=String(r[0]).padStart(2,'0');
+    const mk=String(r[0]).replace(/\D/g,'').padStart(2,'0').substring(0,2);
     CCAL[mk]={
-      seasonalFeel:r[1]||'', photoshoot:r[2]||'', photoshootDate:r[3]||'',
-      holidays:r[4]||'', themes:r[5]||'', categoryFocus:r[6]||'',
-      coreProducts:r[7]||'', reelIdeas:r[8]||'', newProductsList:[]
+      seasonalFeel:r[1]||'', photoshoot:r[2]||'',
+      themes:r[3]||'', categoryFocus:r[4]||'',
+      reelIdeas:r[5]||'', newProductsList:[]
     };
   });
   // Fill any missing months
   for(let m=1;m<=12;m++){
     const mk=String(m).padStart(2,'0');
-    if(!CCAL[mk]) CCAL[mk]={seasonalFeel:'',photoshoot:'',photoshootDate:'',holidays:'',themes:'',categoryFocus:'',coreProducts:'',reelIdeas:'',newProductsList:[]};
+    if(!CCAL[mk]) CCAL[mk]={seasonalFeel:'',photoshoot:'',themes:'',categoryFocus:'',reelIdeas:'',newProductsList:[]};
   }
-  // New to market items
+  // New to market items — col A: In-Market Date, col B: Product Name
+  NTM_FLAT=[];
   newProdRows.filter(r=>r&&r[0]).forEach(r=>{
-    const mk=String(r[0]).padStart(2,'0');
-    if(CCAL[mk]) CCAL[mk].newProductsList.push({name:r[1]||'',launchDate:r[2]||''});
+    const launchDate=normalizeDate(r[0]);
+    if(!launchDate) return;
+    NTM_FLAT.push({name:r[1]||'',launchDate:launchDate});
+    // Also keep in CCAL for content planner view
+    const mk=String(new Date(launchDate+'T00:00:00').getMonth()+1).padStart(2,'0');
+    if(CCAL[mk]) CCAL[mk].newProductsList.push({name:r[1]||'',launchDate:launchDate});
   });
 }
 
@@ -582,14 +597,14 @@ async function loadAllData(){
   showLoading(true);
   showError(null);
   try{
-    const [salesRows,emailRows,contentRows,newProdRows]=await Promise.all([
+    const [salesRows,contentRows,newProdRows]=await Promise.all([
       fetchRange('Sales','A2:M200'),
-      fetchRange('Email_Schedule','A2:E2000'),
-      fetchRange('Content_Calendar','A2:I13'),
-      fetchRange('New_To_Market','A2:C500'),
+      fetchRange('Content_Calendar','A2:F13'),
+      fetchRange('New_To_Market','A2:B500'),
     ]);
     parseSales(salesRows);
-    parseEmailSchedule(emailRows);
+    // Derive major sale months dynamically from the Sales sheet
+    MAJOR_MONTHS = new Set(SALES.filter(s=>s.type==='major'&&s.open).map(s=>s.open.substring(5,7)));
     parseContentCalendar(contentRows,newProdRows);
     renderAll();
     updateLastRefreshed();
@@ -599,6 +614,75 @@ async function loadAllData(){
   }finally{
     showLoading(false);
   }
+}
+
+// ── Sales Table ──
+function renderTable(){
+  const tbody=document.getElementById('table-body');
+  if(!tbody) return;
+  tbody.innerHTML='';
+  SALES.forEach(sale=>{
+    const st=getStatus(sale);
+    const isMajor=sale.type==='major';
+    const md=mainDays(sale);
+    const td=totalDays(sale);
+    const {extMon,extTue}=getSaleExt(sale);
+    const hasExt=sale.extStart||sale.extEnd;
+
+    // NTM items whose launch date falls within this sale window
+    const ntmItems=NTM_FLAT.filter(n=>{
+      if(!n.launchDate||!sale.open||!sale.close) return false;
+      return n.launchDate>=sale.open && n.launchDate<=sale.close;
+    }).map(n=>n.name);
+
+    // Sale name cells — US and UK in separate columns
+    const nameHtml=(isMajor?'<div style="margin-bottom:3px"><span class="tentpole-pill">Tentpole Sale</span></div>':'')
+      +'<span class="'+(isMajor?'name-major':'name-bridge')+'">'+escHtml(sale.name)+'</span>';
+    const nameUKHtml=sale.nameUK
+      ?'<span class="'+(isMajor?'name-major':'name-bridge')+'">'+escHtml(sale.nameUK)+'</span>'
+      :'<span style="color:var(--text-3);font-size:12px">—</span>';
+
+    // Sale offer — pine pill
+    const offerHtml=sale.offer
+      ?'<span class="ro-offer">'+escHtml(sale.offer)+'</span>'
+      :'<span style="color:var(--text-3);font-size:12px;padding:3px 5px">—</span>';
+
+    // Extension — spotlight-style format (offer text first, dates below)
+    const extHtml=hasExt
+      ?'<div class="ro-spotlight">'
+        +(sale.extOffer
+          ?'<span class="ro-spot-text">'+escHtml(sale.extOffer)+'</span>'
+          :'<span class="ro-spot-text" style="color:var(--text-3);font-weight:400;font-style:italic">Extension</span>')
+        +'<span class="ro-spot-dates">'+fmtMed(extMon)+' → '+fmtMed(extTue)+'</span>'
+        +'</div>'
+      :'<span style="color:var(--text-3);font-size:12px;padding:3px 5px">—</span>';
+
+    // Spotlight
+    const spotHtml=(sale.spotlightOffer||sale.spotlightStart)
+      ?'<div class="ro-spotlight">'
+        +(sale.spotlightOffer?'<span class="ro-spot-text">'+escHtml(sale.spotlightOffer)+'</span>':'')
+        +(sale.spotlightStart?'<span class="ro-spot-dates">'+fmtMed(sale.spotlightStart)+' → '+fmtMed(sale.spotlightEnd)+'</span>':'')
+        +'</div>'
+      :'<span style="color:var(--text-3);font-size:12px;padding:3px 5px">—</span>';
+
+    const tr=document.createElement('tr');
+    tr.className='sale-row row-'+sale.type+(st.cls==='active'?' row-active':'')+(st.cls==='done'?' row-done':'');
+    tr.innerHTML=
+      '<td style="padding:0;width:3px'+(st.cls==='active'?';border-left:3px solid var(--green)':'')+'"></td>'
+      +'<td style="vertical-align:middle">'+nameHtml+'</td>'
+      +'<td style="vertical-align:middle">'+nameUKHtml+'</td>'
+      +'<td><span class="ro-date">'+fmtMed(sale.open)+'</span></td>'
+      +'<td><span class="ro-date">'+fmtMed(sale.close)+'</span></td>'
+      +'<td>'+offerHtml+'</td>'
+      +'<td><span class="ro-text">'+(sale.coreItems?escHtml(sale.coreItems).replace(/\n/g,'<br>'):'—')+'</span></td>'
+      +'<td><span class="ro-text">'+(ntmItems.length>0?ntmItems.map(escHtml).join('<br>'):'—')+'</span></td>'
+      +'<td>'+extHtml+'</td>'
+      +'<td>'+spotHtml+'</td>'
+      +'<td class="days-cell">'+(md?md+'d':'—')+'</td>'
+      +'<td class="days-cell">'+(td?td+'d':'—')+'</td>'
+      +'<td><span class="st-pill st-'+st.cls+'">'+st.label+'</span></td>';
+    tbody.appendChild(tr);
+  });
 }
 
 function renderAll(){
@@ -659,6 +743,17 @@ function renderHero(){
   const daysOffset=CIRC-(daysLeft/Math.max(daysLeft,30))*CIRC;
   const liveHtml=st.cls==='active'?'<div class="hero-live"><div class="hero-status-dot"></div><span class="hero-status-lbl">Live Now</span></div>':'';
   const offerHtml=sale.offer?'<div class="hero-offer-text"><strong>Offer</strong>'+escHtml(sale.offer)+'</div>':'';
+  // ── Revenue goal donut (placeholder — wire up data source later) ──
+  const REV_ACTUAL   = null;   // e.g. 42500  ← connect your data source here
+  const REV_GOAL     = null;   // e.g. 60000  ← connect your data source here
+  const revPct       = (REV_ACTUAL&&REV_GOAL)?Math.min(100,Math.round(REV_ACTUAL/REV_GOAL*100)):0;
+  const revHasData   = REV_ACTUAL!==null && REV_GOAL!==null;
+  const revOffset    = CIRC-(revPct/100)*CIRC;
+  const revStroke    = revPct>=100?'var(--maple)':revPct>=60?'var(--pine)':'var(--oak)';
+  const revCenterNum = revHasData?revPct+'%':'—';
+  const revFmtNum    = n=>n>=1000?(n/1000).toFixed(1)+'k':String(n);
+  const revSubLine   = revHasData?'<span class="hero-days-lbl" style="margin-top:3px;font-size:8px">'+revFmtNum(REV_ACTUAL)+' / '+revFmtNum(REV_GOAL)+'</span>':'';
+
   hero.innerHTML='<div class="dash-sale">'
     +'<div class="hero-info">'
     +'<div class="hero-badge"><span class="hero-type-tag">'+(isMajor?'Tentpole Sale':'Bridge Sale')+'</span>'+liveHtml+'</div>'
@@ -666,117 +761,29 @@ function renderHero(){
     +'<div class="hero-dates"><b>'+fmtMed(sale.open)+'</b> &rarr; <b>'+fmtMed(sale.close)+'</b></div>'
     +'<div class="hero-progress-wrap"><div class="hero-progress-bar"><div class="hero-progress-fill" style="width:'+pct+'%"></div></div><span class="hero-progress-lbl">'+pct+'% through</span></div>'
     +offerHtml+'</div>'
+    // ── Days left donut ──
     +'<div class="hero-donut-divider"></div>'
     +'<div class="hero-donut"><svg width="'+SZ+'" height="'+SZ+'"><circle cx="'+C+'" cy="'+C+'" r="'+R+'" fill="none" stroke="var(--gray-2)" stroke-width="'+SW+'"/><circle cx="'+C+'" cy="'+C+'" r="'+R+'" fill="none" stroke="var(--green)" stroke-width="'+SW+'" stroke-dasharray="'+CIRC+'" stroke-dashoffset="'+daysOffset+'" stroke-linecap="round"/></svg>'
     +'<div class="hero-donut-center"><span class="hero-days-num">'+daysLeft+'</span><span class="hero-days-lbl">'+(st.cls==='active'?'Days Left':'Days Away')+'</span></div></div>'
+    // ── Revenue vs goal donut ──
+    +'<div class="hero-donut-divider"></div>'
+    +'<div class="hero-donut-wrap">'
+    +'<div class="hero-donut-lbl">Revenue vs Goal</div>'
+    +'<div class="hero-donut">'
+    +'<svg width="'+SZ+'" height="'+SZ+'"><circle cx="'+C+'" cy="'+C+'" r="'+R+'" fill="none" stroke="var(--gray-2)" stroke-width="'+SW+'"/>'
+    +(revHasData?'<circle cx="'+C+'" cy="'+C+'" r="'+R+'" fill="none" stroke="'+revStroke+'" stroke-width="'+SW+'" stroke-dasharray="'+CIRC+'" stroke-dashoffset="'+revOffset+'" stroke-linecap="round"/>':'')
+    +'</svg>'
+    +'<div class="hero-donut-center"><span class="hero-days-num" style="font-size:'+(revHasData?'22px':'18px')+'">'+revCenterNum+'</span><span class="hero-days-lbl">of goal</span>'+revSubLine+'</div>'
+    +'</div>'
+    +'</div>'
     +'</div>';
 }
 
 // ── Table ──
-function toggleExpand(idx){
-  const row=document.getElementById('expand-'+idx);
-  if(EXPANDED.has(idx)){
-    EXPANDED.delete(idx); row.classList.remove('visible');
-    row.querySelector('td').innerHTML='';
-    const btn=document.getElementById('toggle-'+idx);
-    if(btn){btn.textContent='▶ Show';btn.classList.remove('open');}
-  } else {
-    EXPANDED.add(idx); row.classList.add('visible');
-    row.querySelector('td').innerHTML=buildEmailRows(SALES[idx],idx);
-    const btn=document.getElementById('toggle-'+idx);
-    if(btn){btn.textContent='▼ Hide';btn.classList.add('open');}
-  }
-}
-
-function buildEmailRows(sale,idx){
-  const dates=getSaleDates(sale);
-  if(!dates.length) return '<div style="padding:14px 20px;color:var(--text-3);font-size:11px;font-style:italic">No dates — set open/close dates in Google Sheets.</div>';
-  const ed=sale.emailDays||{};
-  const rows=dates.map(({dateStr,isExt})=>{
-    const d=new Date(dateStr+'T00:00:00');
-    const dateFmt=MONTHS_SHORT[d.getMonth()]+' '+d.getDate()+', '+d.getFullYear();
-    const dow=DAYS_SHORT[d.getDay()];
-    const entry=ed[dateStr]||{};
-    const subj=entry.subject||'';
-    const pre=entry.pretext||'';
-    const prods=entry.products||'';
-    return '<tr class="email-day-row'+(isExt?' ext-day':'')+'">'
-      +'<td class="date-cell"><span class="date-text">'+dateFmt+'</span>'
-      +'<span class="dow-badge '+(isExt?'dow-ext':'dow-main')+'">'+dow+'</span>'
-      +(isExt?'<span class="type-tag-ext">Extension</span>':'')+'</td>'
-      +'<td><span class="ro-email-val'+(subj?'':' empty')+'">'+escHtml(subj||'—')+'</span></td>'
-      +'<td><span class="ro-email-val'+(pre?'':' empty')+'">'+escHtml(pre||'—')+'</span></td>'
-      +'<td><span class="ro-email-val'+(prods?'':' empty')+'">'+escHtml(prods||'—')+'</span></td>'
-      +'</tr>';
-  }).join('');
-  return '<table class="email-day-table"><thead><tr><th>Date</th><th>Email Subject Line</th><th>Pre-text Line</th><th>Products / Categories</th></tr></thead><tbody>'+rows+'</tbody></table>';
-}
-
-function renderTable(){
-  const tbody=document.getElementById('table-body');
-  tbody.innerHTML='';
-  SALES.forEach((sale,i)=>{
-    const st=getStatus(sale);
-    const isMajor=sale.type==='major';
-    const md=mainDays(sale), td=totalDays(sale);
-    const {extMon,extTue}=getSaleExt(sale);
-    const isExpanded=EXPANDED.has(i);
-    const contentMk=MAJOR_CONTENT_MAP[sale.name];
-    const closeMk=sale.close?sale.close.substring(5,7):'';
-    const newItems=(closeMk&&CCAL[closeMk]&&Array.isArray(CCAL[closeMk].newProductsList))
-      ?CCAL[closeMk].newProductsList.filter(it=>it.name||it.launchDate):[];
-    const hasITP=contentMk||newItems.length>0;
-
-    // Items to Promote panel
-    let itpHtml='';
-    if(hasITP){
-      let body='';
-      if(contentMk){
-        const prods=escHtml((CCAL[contentMk]&&CCAL[contentMk].coreProducts||'').trim());
-        if(prods) body+='<div class="itp-lbl">Core Products</div><div class="itp-text">'+prods+'</div>';
-      }
-      if(newItems.length>0){
-        body+='<div class="itp-lbl" style="margin-top:'+(body?'6':'0')+'px">New to Market</div>';
-        body+=newItems.map(it=>'<div class="itp-new-item">'+escHtml(it.name||'(unnamed)')+(it.launchDate?'<span class="itp-launch-date">in-market '+ctFmtDate(it.launchDate)+'</span>':'')+'</div>').join('');
-      }
-      itpHtml='<div class="itp-wrap"><div class="itp-lbl">Items to Promote</div>'+body+'</div>';
-    }
-
-    // Extension display
-    const extHtml=(extMon||extTue)?'<div class="ro-ext">'+fmtMed(extMon)+' &rarr; '+fmtMed(extTue)+'</div>':'<span style="color:var(--text-3);font-size:11px;padding:3px 5px">—</span>';
-
-    const tr=document.createElement('tr');
-    tr.className='sale-row row-'+sale.type+(st.cls==='active'?' row-active':'');
-    tr.innerHTML='<td style="padding:0;width:3px'+(st.cls==='active'?';border-left:3px solid var(--green)':'')+'"></td>'
-      +'<td style="vertical-align:middle">'+(isMajor?'<div style="margin-bottom:3px"><span class="tentpole-pill">Tentpole Sale</span></div>':'')+'<span class="'+(isMajor?'name-major':'name-bridge')+'">'+escHtml(sale.name)+'</span></td>'
-      +'<td style="padding:6px 10px;text-align:center"><button class="toggle-btn'+(isExpanded?' open':'')+'" id="toggle-'+i+'" onclick="toggleExpand('+i+')">'+(isExpanded?'▼ Hide':'▶ Show')+'</button></td>'
-      +'<td><span class="ro-date">'+fmtFull(sale.open)+'</span></td>'
-      +'<td><span class="ro-date">'+fmtFull(sale.close)+'</span></td>'
-      +'<td><span class="ro-offer">'+escHtml(sale.offer||'—')+'</span>'+itpHtml+'</td>'
-      +'<td>'+extHtml+'</td>'
-      +'<td><div class="ro-spotlight"><span class="ro-spot-text">'+escHtml(sale.spotlightOffer||'—')+'</span>'+(sale.spotlightStart?'<span class="ro-spot-dates">'+fmtMed(sale.spotlightStart)+' &rarr; '+fmtMed(sale.spotlightEnd)+'</span>':'')+'</div></td>'
-      +'<td><span class="ro-flash-text">'+escHtml(sale.flashSale||'—')+'</span>'+(sale.flashStart?'<span class="ro-flash-dates">'+fmtMed(sale.flashStart)+' &rarr; '+fmtMed(sale.flashEnd)+'</span>':'')+'</td>'
-      +'<td class="days-cell">'+md+'</td>'
-      +'<td class="days-cell">'+td+'</td>'
-      +'<td><span class="st-pill '+st.pill+'">'+st.label+'</span></td>';
-    tbody.appendChild(tr);
-
-    const expandTr=document.createElement('tr');
-    expandTr.className='email-expand-row'+(isExpanded?' visible':'');
-    expandTr.id='expand-'+i;
-    const expandTd=document.createElement('td');
-    expandTd.className='email-expand-cell';
-    expandTd.colSpan=12;
-    expandTd.innerHTML=isExpanded?buildEmailRows(sale,i):'';
-    expandTr.appendChild(expandTd);
-    tbody.appendChild(expandTr);
-  });
-}
-
 // ── Gantt ──
 const CHART_START=new Date('2025-12-17T00:00:00');
 const CHART_END  =new Date('2026-12-31T00:00:00');
-const PX=2.6;
+const PX=6;  // pixels per day — larger = more readable by month, scroll horizontally
 function px(d){ return Math.round(daysBetween(CHART_START,d)*PX) }
 
 function buildRuler(rulerEl){
@@ -790,11 +797,14 @@ function buildRuler(rulerEl){
     const mw=daysBetween(cur,nextM)*PX;
     html+='<div class="gantt-month-lbl" style="left:'+x+'px;width:'+mw+'px">'+MONTHS_SHORT[cur.getMonth()]+' '+cur.getFullYear()+'</div>';
     let wk=new Date(cur);
+    let first=true;
     while(wk<nextM&&wk<=CHART_END){
       const wx=px(wk);
-      html+='<div class="gantt-week-tick" style="left:'+wx+'px"></div>';
-      html+='<div class="gantt-week-lbl" style="left:'+wx+'px">'+fmtShort(fmtDate(wk))+'</div>';
-      wk=addDays(wk,7);
+      if(!first){ // skip first tick (it's the month boundary)
+        html+='<div class="gantt-week-tick" style="left:'+wx+'px"></div>';
+        html+='<div class="gantt-week-lbl" style="left:'+wx+'px">'+fmtShort(fmtDate(wk))+'</div>';
+      }
+      wk=addDays(wk,7); first=false;
     }
     cur=nextM;
   }
@@ -837,12 +847,7 @@ function renderGantt(){
     if(sale.spotlightStart&&sale.spotlightEnd){
       const sl=px(new Date(sale.spotlightStart+'T00:00:00'));
       const sw=Math.max(4,daysBetween(new Date(sale.spotlightStart+'T00:00:00'),new Date(sale.spotlightEnd+'T00:00:00'))*PX);
-      barsHtml+='<div class="bar-spotlight" style="left:'+sl+'px;width:'+sw+'px;top:34px">'+escHtml(sale.spotlightOffer?sale.spotlightOffer.substring(0,28):'Spotlight')+'</div>';
-    }
-    if(sale.flashStart&&sale.flashEnd){
-      const fl=px(new Date(sale.flashStart+'T00:00:00'));
-      const fw=Math.max(4,daysBetween(new Date(sale.flashStart+'T00:00:00'),new Date(sale.flashEnd+'T00:00:00'))*PX);
-      barsHtml+='<div class="bar-flash" style="left:'+fl+'px;width:'+fw+'px;top:34px">'+escHtml(sale.flashSale?sale.flashSale.substring(0,20):'Flash')+'</div>';
+      barsHtml+='<div class="bar-spotlight" style="left:'+sl+'px;width:'+sw+'px;top:46px">'+escHtml(sale.spotlightOffer?sale.spotlightOffer.substring(0,28):'Spotlight')+'</div>';
     }
     const todayL=px(today);
     barsHtml+='<div class="today-line" style="left:'+todayL+'px"></div>';
@@ -863,8 +868,8 @@ function renderContent(){
   if(!wrap) return;
   const today=new Date();
   const curMk=today.getFullYear()===2026?String(today.getMonth()+1).padStart(2,'0'):null;
-  let html='<table class="content-table"><colgroup><col style="width:168px">';
-  for(let m=1;m<=12;m++) html+='<col style="width:148px">';
+  let html='<table class="content-table"><colgroup><col style="width:190px">';
+  for(let m=1;m<=12;m++) html+='<col style="width:170px">';
   html+='</colgroup><thead>';
   html+='<tr><th class="ct-corner ct-q-hdr">FY26 Content Calendar</th>';
   QUARTERS_DEF.forEach(q=>{ html+='<th class="ct-q-hdr '+q.cls+'" colspan="3">'+q.label+'</th>'; });
@@ -875,44 +880,63 @@ function renderContent(){
     const qi=Math.floor((m-1)/3);
     const qcls=QUARTERS_DEF[qi].cls;
     const isCur=mk===curMk;
-    const isMajorM=MAJOR_SALE_MONTHS[mk];
-    const badge=isMajorM?'<div class="ct-major-badge">'+isMajorM+'</div>':'';
+    const isMajorM=MAJOR_MONTHS.has(mk);
+    const badge='';
     html+='<th class="ct-m-hdr '+qcls+(isCur?' cur-month':'')+(isMajorM?' major-sale-col':'')+'">'+(isCur?'<span class="cur-month-indicator"></span>':'')+MONTHS_SHORT[m-1]+badge+'</th>';
   }
   html+='</tr></thead><tbody>';
 
   CONTENT_ROW_DEFS.forEach(row=>{
     html+='<tr><td class="ct-row-label">'+row.label+(row.sub?'<div class="ct-row-sub">'+row.sub+'</div>':'')+'</td>';
-    if(row.quarterly){
-      // One cell per quarter
-      [0,1,2,3].forEach(qi=>{
-        const firstM=qi*3+1;
-        const mk=String(firstM).padStart(2,'0');
+    if(row.shootRow){
+      // Auto-derive from sales: group by "shoot month" (month before sale opens)
+      const shootMap=buildShootMap();
+      for(let m=1;m<=12;m++){
+        const mk=String(m).padStart(2,'0');
+        const qi=Math.floor((m-1)/3);
         const qcls=QUARTERS_DEF[qi].cls;
-        const isCurQ=curMk&&Math.floor((parseInt(curMk)-1)/3)===qi;
-        const d=CCAL[mk]||{};
-        const notes=escHtml(d.photoshoot||'');
-        const psDate=d.photoshootDate||'';
-        const concept=psDate?ctFmtDate(ctSubMonth(psDate)):'';
-        const delivery=psDate?ctFmtDate(ctAddDays14(psDate)):'';
+        const isCur=mk===curMk;
+        const isMajorCell=MAJOR_MONTHS.has(mk);
+        const sales=shootMap[mk]||[];
         let cellHtml='';
-        if(psDate) cellHtml+='<div class="ct-shoot-date">📷 '+ctFmtDate(psDate)+'</div>';
-        if(notes) cellHtml+=escHtml(notes);
-        if(concept) cellHtml+='<div class="ct-pm-row"><span class="ct-pm-lbl concept">Concept due</span><span class="ct-pm-val">'+concept+'</span></div>';
-        if(delivery) cellHtml+='<div class="ct-pm-row"><span class="ct-pm-lbl delivery">Delivery ETA</span><span class="ct-pm-val">'+delivery+'</span></div>';
-        if(!cellHtml) cellHtml='<span style="color:var(--text-3);font-style:italic;font-size:10.5px">No shoot scheduled</span>';
-        html+='<td class="ct-cell '+qcls+(isCurQ?' cur-month':'')+' quarterly" colspan="3">'+cellHtml+'</td>';
-      });
+        if(sales.length>0){
+          cellHtml=sales.map(sale=>{
+            const hasItems=sale.coreItems&&sale.coreItems.trim();
+            const items=hasItems?sale.coreItems.trim().split('\n').filter(Boolean):[];
+            const sDate=calcShootDate(sale.open);
+            const pillBg=sale.type==='major'?'var(--maple)':'var(--dark)';
+            const pillShadow=sale.type==='major'?'0 2px 8px rgba(204,138,61,0.3)':'0 2px 8px rgba(0,0,0,0.22)';
+            return '<div style="background:'+pillBg+';border-radius:10px;padding:10px 14px;margin-bottom:10px;box-shadow:'+pillShadow+'">'
+              // Row 1: Photoshoot date
+              +(sDate?'<div style="font-size:19px;font-weight:800;color:#fff;letter-spacing:-.02em;line-height:1.1;margin-bottom:2px"><span style="font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:rgba(255,255,255,.55);display:block;margin-bottom:3px">Photoshoot</span>'+fmtMed(sDate)+'</div>':'')
+              // Row 2: Sale name + sale start
+              +'<div style="font-size:10px;font-weight:600;letter-spacing:.03em;text-transform:uppercase;color:rgba(255,255,255,.55);margin-top:6px;margin-bottom:6px;padding-top:6px;border-top:1px solid rgba(255,255,255,.1)">'+escHtml(sale.name)+' &nbsp;·&nbsp; Sale start '+fmtMed(sale.open)+'</div>'
+              // Row 3: Items
+              +(items.length>0
+                ?'<div style="border-top:1px solid rgba(255,255,255,.1);padding-top:6px">'+items.map(it=>'<div style="font-size:11.5px;color:rgba(255,255,255,.85);padding:2px 0;line-height:1.5">• '+escHtml(it.trim())+'</div>').join('')+'</div>'
+                :'<div style="border-top:1px solid rgba(255,255,255,.1);padding-top:6px;font-size:11px;color:rgba(255,255,255,.4);font-style:italic">Items TBD</div>'
+              )
+              +'</div>';
+          }).join('');
+        } else {
+          cellHtml='<span style="color:var(--text-3);font-style:italic;font-size:10.5px">—</span>';
+        }
+        html+='<td class="ct-cell '+qcls+(isCur?' cur-month':'')+(isMajorCell?' major-sale-col':'')+'">'+cellHtml+'</td>';
+      }
     } else if(row.multiItem){
       for(let m=1;m<=12;m++){
         const mk=String(m).padStart(2,'0');
         const qi=Math.floor((m-1)/3);
         const qcls=QUARTERS_DEF[qi].cls;
         const isCur=mk===curMk;
-        const isMajorCell=MAJOR_SALE_MONTHS[mk];
+        const isMajorCell=MAJOR_MONTHS.has(mk);
         const items=(CCAL[mk]&&CCAL[mk].newProductsList)||[];
         let cellHtml=items.length>0
-          ?items.map(it=>'<div class="npm-ro-item">'+escHtml(it.name||'(unnamed)')+(it.launchDate?'<div class="npm-ro-date">📅 '+ctFmtDate(it.launchDate)+'</div>':'')+'</div>').join('')
+          ?items.map(it=>'<div style="background:var(--dark);border-radius:10px;padding:10px 14px;margin-bottom:8px;box-shadow:0 2px 8px rgba(0,0,0,0.22)">'
+            +'<div style="font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.55);margin-bottom:4px">New to Market</div>'
+            +'<div style="font-size:15px;font-weight:800;color:#fff;line-height:1.2;letter-spacing:-.01em">'+escHtml(it.name||'(unnamed)')+'</div>'
+            +(it.launchDate?'<div style="font-size:9.5px;color:rgba(255,255,255,.5);margin-top:4px;font-weight:500">In-market '+ctFmtDate(it.launchDate)+'</div>':'')
+            +'</div>').join('')
           :'<span style="color:var(--text-3);font-style:italic;font-size:10.5px">—</span>';
         html+='<td class="ct-cell '+qcls+(isCur?' cur-month':'')+(isMajorCell?' major-sale-col':'')+'">'+cellHtml+'</td>';
       }
@@ -922,7 +946,7 @@ function renderContent(){
         const qi=Math.floor((m-1)/3);
         const qcls=QUARTERS_DEF[qi].cls;
         const isCur=mk===curMk;
-        const isMajorCell=MAJOR_SALE_MONTHS[mk];
+        const isMajorCell=MAJOR_MONTHS.has(mk);
         const val=escHtml((CCAL[mk]&&CCAL[mk][row.key])||'');
         html+='<td class="ct-cell '+qcls+(isCur?' cur-month':'')+(isMajorCell?' major-sale-col':'')+'">'+val+'</td>';
       }
@@ -934,6 +958,8 @@ function renderContent(){
 }
 
 // ── Photoshoot Gantt ──
+// Auto-derived from Sales data: each sale's "shoot month" is the month before it opens
+// (or same month if it opens on/after the 20th). Shows prep window bar + sale open marker.
 function renderPhotoshootGantt(){
   const outer=document.getElementById('ps-gantt-outer');
   const ruler=document.getElementById('ps-gantt-ruler');
@@ -941,32 +967,63 @@ function renderPhotoshootGantt(){
   const totalPx=daysBetween(CHART_START,CHART_END)*PX;
   outer.style.minWidth=(220+totalPx)+'px';
   buildRuler(ruler);
-  const ROW_H=60;
+  const shootMap=buildShootMap();
+  const BAR_H=26, BAR_GAP=8, TOP_OFFSET=6;
   let html='';
+  const todayL=px(new Date());
   for(let m=1;m<=12;m++){
     const mk=String(m).padStart(2,'0');
-    const d=CCAL[mk]||{};
-    const psDate=d.photoshootDate||'';
+    const sales=shootMap[mk]||[];
     const monthName=MONTHS_SHORT[m-1]+' 2026';
-    let barsHtml='';
-    if(psDate){
-      const shootD=new Date(psDate+'T00:00:00');
-      const conceptD=new Date(ctSubMonth(psDate)+'T00:00:00');
-      const deliveryEndD=new Date(ctAddDays14(psDate)+'T00:00:00');
-      const conceptL=px(conceptD), conceptW=Math.max(8,daysBetween(conceptD,shootD)*PX);
-      const shootL=px(shootD);
-      const delivL=px(shootD)+20, delivW=Math.max(8,daysBetween(shootD,deliveryEndD)*PX);
-      const todayL=px(new Date());
-      barsHtml='<div class="ps-bar-concept" style="left:'+conceptL+'px;width:'+conceptW+'px">Concept Prep</div>'
-        +'<div class="ps-shoot-marker" style="left:'+shootL+'px" title="Shoot Day">📷</div>'
-        +'<div class="ps-bar-delivery" style="left:'+delivL+'px;width:'+delivW+'px">Editing / Delivery</div>'
-        +'<div class="today-line" style="left:'+todayL+'px"></div>';
+    const rowMinH=sales.length>0?Math.max(64,TOP_OFFSET+sales.length*(BAR_H+BAR_GAP)+10):56;
+    let barsHtml='<div class="today-line" style="left:'+todayL+'px"></div>';
+    if(sales.length>0){
+      // Month start in pixels (clamp to chart start)
+      const monthStartD=new Date(2026,m-1,1);
+      const monthStartPx=Math.max(0,px(monthStartD));
+      sales.forEach((sale,si)=>{
+        const topPx=TOP_OFFSET+si*(BAR_H+BAR_GAP);
+        const saleOpenD=new Date(sale.open+'T00:00:00');
+        const barL=monthStartPx;
+        const barW=Math.max(24,(daysBetween(monthStartD,saleOpenD))*PX);
+        // Truncate items list for label
+        const items=(sale.coreItems||'').trim().split('\n').filter(Boolean);
+        const itemsShort=items.slice(0,3).map(it=>it.trim()).join(' · ')+(items.length>3?' +'+( items.length-3)+' more':'');
+        const shootD=new Date(calcShootDate(sale.open)+'T00:00:00');
+        const shootL=px(shootD)-10;
+        const saleOpenL=px(saleOpenD);
+        const barColor=sale.type==='major'?'#6E2FBE':'#9B59D0';
+        barsHtml+='<div title="'+escHtml(sale.name)+': '+escHtml(items.join(', '))+'" style="'
+          +'position:absolute;top:'+topPx+'px;left:'+barL+'px;width:'+barW+'px;height:'+BAR_H+'px;'
+          +'border-radius:6px 0 0 6px;background:'+barColor+';color:#fff;'
+          +'display:flex;align-items:center;padding:0 10px;overflow:hidden;white-space:nowrap;cursor:default;font-size:9.5px;font-weight:600">'
+          +'<span style="font-weight:700;margin-right:7px;flex-shrink:0">'+escHtml(sale.name)+'</span>'
+          +'<span style="opacity:.82;font-size:8.5px">'+escHtml(itemsShort||'Items TBD')+'</span>'
+          +'</div>';
+        // Camera marker at shoot date (30 days before open)
+        barsHtml+='<div title="Shoot by '+fmtMed(calcShootDate(sale.open))+' — '+escHtml(sale.name)+' starts '+fmtMed(sale.open)+'" style="'
+          +'position:absolute;top:'+(topPx-3)+'px;left:'+shootL+'px;width:22px;height:'+(BAR_H+6)+'px;'
+          +'background:var(--dark);border-radius:4px;display:flex;align-items:center;justify-content:center;'
+          +'font-size:13px;z-index:6;box-shadow:0 2px 8px rgba(0,0,0,0.25);cursor:default">📷</div>';
+        // Shoot date label below marker
+        barsHtml+='<div style="position:absolute;top:'+(topPx+BAR_H+1)+'px;left:'+shootL+'px;'
+          +'font-size:8px;font-weight:600;color:var(--dark);white-space:nowrap;transform:translateX(-20%)">'+fmtMed(calcShootDate(sale.open))+'</div>';
+        // Sale start label at sale open line
+        barsHtml+='<div style="position:absolute;top:'+(topPx-12)+'px;left:'+saleOpenL+'px;'
+          +'font-size:7.5px;color:var(--text-3);white-space:nowrap;transform:translateX(-50%)">sale start</div>'
+          +'<div style="position:absolute;top:'+topPx+'px;left:'+saleOpenL+'px;width:1px;height:'+BAR_H+'px;background:rgba(0,0,0,0.2)"></div>';
+      });
+      html+='<div class="gantt-row-wrap" style="min-height:'+rowMinH+'px">'
+        +'<div class="glc" style="align-items:flex-start;padding-top:10px;flex-direction:column;gap:5px">'
+        +'<span class="gsale-name">'+monthName+'</span>'
+        +sales.map(s=>'<span class="ps-month-badge" style="margin-top:1px;font-size:8.5px">'+escHtml(s.name)+'</span>').join('')
+        +'</div>'
+        +'<div class="gtc" style="width:'+totalPx+'px">'+barsHtml+'</div></div>';
     } else {
-      barsHtml='<div class="ps-empty-row">No shoot scheduled</div>';
+      html+='<div class="gantt-row-wrap" style="min-height:56px">'
+        +'<div class="glc"><span class="gsale-name" style="color:var(--text-3)">'+monthName+'</span></div>'
+        +'<div class="gtc" style="width:'+totalPx+'px"><div class="ps-empty-row">No shoots this month</div>'+barsHtml+'</div></div>';
     }
-    html+='<div class="gantt-row-wrap" style="min-height:'+ROW_H+'px">'
-      +'<div class="glc"><span class="gsale-name">'+monthName+'</span>'+(psDate?'<span class="ps-month-badge">📷 '+fmtMed(psDate)+'</span>':'')+'</div>'
-      +'<div class="gtc" style="width:'+totalPx+'px">'+barsHtml+'</div></div>';
   }
   rowsEl.innerHTML=html;
   const wrap=document.getElementById('ps-gantt-wrap');
